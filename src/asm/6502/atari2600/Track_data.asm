@@ -1,0 +1,1514 @@
+; Song: TIA Spanish Flea
+; Author: Karri Kaksonen
+
+; Song Lookup Table
+NUM_SONGS = 1
+SONG_TABLE_START_LO
+SONG_0 = . - SONG_TABLE_START_LO
+    byte <SONG_0_ADDR
+SONG_TABLE_START_HI
+    byte >SONG_0_ADDR
+; songs
+SONG_0_ADDR
+    byte PAT_S00_C00_P00, PAT_S00_C01_P00
+    byte PAT_S00_C00_P01, PAT_S00_C01_P01
+    byte PAT_S00_C00_P02, PAT_S00_C01_P00
+    byte PAT_S00_C00_P03, PAT_S00_C01_P00
+    byte PAT_S00_C00_P04, PAT_S00_C01_P00
+    byte PAT_S00_C00_P05, PAT_S00_C01_P00
+    byte PAT_S00_C00_P0c, PAT_S00_C01_P00
+    byte PAT_S00_C00_P03, PAT_S00_C01_P00
+    byte PAT_S00_C00_P04, PAT_S00_C01_P00
+    byte PAT_S00_C00_P05, PAT_S00_C01_P00
+    byte PAT_S00_C00_P00, PAT_S00_C01_P00
+    byte PAT_S00_C00_P06, PAT_S00_C01_P02
+    byte PAT_S00_C00_P07, PAT_S00_C01_P00
+    byte PAT_S00_C00_P08, PAT_S00_C01_P00
+    byte PAT_S00_C00_P09, PAT_S00_C01_P00
+    byte PAT_S00_C00_P0a, PAT_S00_C01_P00
+    byte PAT_S00_C00_P02, PAT_S00_C01_P00
+    byte PAT_S00_C00_P03, PAT_S00_C01_P00
+    byte PAT_S00_C00_P04, PAT_S00_C01_P00
+    byte PAT_S00_C00_P05, PAT_S00_C01_P00
+    byte PAT_S00_C00_P06, PAT_S00_C01_P02
+    byte PAT_S00_C00_P07, PAT_S00_C01_P00
+    byte PAT_S00_C00_P08, PAT_S00_C01_P00
+    byte PAT_S00_C00_P09, PAT_S00_C01_P00
+    byte PAT_S00_C00_P0a, PAT_S00_C01_P00
+    byte PAT_S00_C00_P02, PAT_S00_C01_P00
+    byte PAT_S00_C00_P03, PAT_S00_C01_P00
+    byte PAT_S00_C00_P04, PAT_S00_C01_P00
+    byte PAT_S00_C00_P05, PAT_S00_C01_P00
+    byte 255
+
+; Pattern Lookup Table
+NUM_PATTERNS = 15
+PAT_TABLE_START_LO
+PAT_S00_C00_P00 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P00_ADDR
+PAT_S00_C01_P00 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C01_P00_ADDR
+PAT_S00_C00_P01 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P01_ADDR
+PAT_S00_C01_P01 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C01_P01_ADDR
+PAT_S00_C00_P02 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P02_ADDR
+PAT_S00_C00_P03 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P03_ADDR
+PAT_S00_C00_P04 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P04_ADDR
+PAT_S00_C00_P05 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P05_ADDR
+PAT_S00_C00_P0c = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P0c_ADDR
+PAT_S00_C00_P06 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P06_ADDR
+PAT_S00_C01_P02 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C01_P02_ADDR
+PAT_S00_C00_P07 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P07_ADDR
+PAT_S00_C00_P08 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P08_ADDR
+PAT_S00_C00_P09 = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P09_ADDR
+PAT_S00_C00_P0a = . - PAT_TABLE_START_LO
+   byte <PAT_S00_C00_P0a_ADDR
+PAT_TABLE_START_HI
+   byte >PAT_S00_C00_P00_ADDR
+   byte >PAT_S00_C01_P00_ADDR
+   byte >PAT_S00_C00_P01_ADDR
+   byte >PAT_S00_C01_P01_ADDR
+   byte >PAT_S00_C00_P02_ADDR
+   byte >PAT_S00_C00_P03_ADDR
+   byte >PAT_S00_C00_P04_ADDR
+   byte >PAT_S00_C00_P05_ADDR
+   byte >PAT_S00_C00_P0c_ADDR
+   byte >PAT_S00_C00_P06_ADDR
+   byte >PAT_S00_C01_P02_ADDR
+   byte >PAT_S00_C00_P07_ADDR
+   byte >PAT_S00_C00_P08_ADDR
+   byte >PAT_S00_C00_P09_ADDR
+   byte >PAT_S00_C00_P0a_ADDR
+; Subsong: 0 Channel: 0 Pattern: 0 / 
+PAT_S00_C00_P00_ADDR
+    byte SEQ_S00_O00_R00_C00,SEQ_S00_O00_R01_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R04_C00,SEQ_S00_O00_R01_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R02_C00
+    byte SEQ_S00_O00_R04_C00,SEQ_S00_O00_R01_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R0b_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O00_R0b_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R0f_C00
+    byte 255
+; Subsong: 0 Channel: 1 Pattern: 0 / 
+PAT_S00_C01_P00_ADDR
+    byte SEQ_S00_O00_R00_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R02_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R02_C01,SEQ_S00_O00_R01_C01
+    byte SEQ_S00_O00_R01_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R02_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R02_C01,SEQ_S00_O00_R01_C01
+    byte 255
+; Subsong: 0 Channel: 0 Pattern: 1 / 
+PAT_S00_C00_P01_ADDR
+    byte SEQ_S00_O00_R04_C00,SEQ_S00_O00_R01_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R0b_C00,SEQ_S00_O01_R05_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R02_C00
+    byte SEQ_S00_O00_R04_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O01_R0d_C00,SEQ_S00_O01_R0e_C00,SEQ_S00_O01_R0f_C00
+    byte 255
+; Subsong: 0 Channel: 1 Pattern: 1 / 
+PAT_S00_C01_P01_ADDR
+    byte SEQ_S00_O00_R01_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R02_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R02_C01,SEQ_S00_O00_R01_C01
+    byte SEQ_S00_O00_R01_C01,SEQ_S00_O00_R0c_C00,SEQ_S00_O01_R0a_C01,SEQ_S00_O01_R0b_C01,SEQ_S00_O01_R0a_C01,SEQ_S00_O01_R0b_C01,SEQ_S00_O00_R0c_C00,SEQ_S00_O00_R0c_C00
+    byte 255
+; Subsong: 0 Channel: 0 Pattern: 2 / 
+PAT_S00_C00_P02_ADDR
+    byte SEQ_S00_O00_R0b_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O02_R02_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O02_R02_C00,SEQ_S00_O02_R05_C00,SEQ_S00_O02_R06_C00,SEQ_S00_O02_R07_C00
+    byte SEQ_S00_O02_R08_C00,SEQ_S00_O02_R09_C00,SEQ_S00_O02_R09_C00,SEQ_S00_O02_R0b_C00,SEQ_S00_O02_R0c_C00,SEQ_S00_O02_R0d_C00,SEQ_S00_O02_R0e_C00,SEQ_S00_O00_R0b_C00
+    byte 255
+; Subsong: 0 Channel: 0 Pattern: 3 / 
+PAT_S00_C00_P03_ADDR
+    byte SEQ_S00_O01_R0f_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O02_R05_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O02_R05_C00,SEQ_S00_O00_R04_C00,SEQ_S00_O00_R01_C00,SEQ_S00_O03_R07_C00
+    byte SEQ_S00_O03_R08_C00,SEQ_S00_O03_R09_C00,SEQ_S00_O03_R09_C00,SEQ_S00_O03_R0b_C00,SEQ_S00_O02_R0c_C00,SEQ_S00_O00_R0b_C00,SEQ_S00_O01_R0f_C00,SEQ_S00_O01_R0e_C00
+    byte 255
+; Subsong: 0 Channel: 0 Pattern: 4 / 
+PAT_S00_C00_P04_ADDR
+    byte SEQ_S00_O01_R0d_C00,SEQ_S00_O00_R0b_C00,SEQ_S00_O00_R04_C00,SEQ_S00_O02_R0d_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O00_R04_C00,SEQ_S00_O02_R05_C00,SEQ_S00_O02_R06_C00
+    byte SEQ_S00_O00_R0b_C00,SEQ_S00_O04_R09_C00,SEQ_S00_O04_R0a_C00,SEQ_S00_O00_R04_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O04_R0a_C00,SEQ_S00_O04_R0e_C00,SEQ_S00_O04_R0f_C00
+    byte 255
+; Subsong: 0 Channel: 0 Pattern: 5 / 
+PAT_S00_C00_P05_ADDR
+    byte SEQ_S00_O00_R02_C00,SEQ_S00_O00_R0f_C00,SEQ_S00_O05_R02_C00,SEQ_S00_O05_R02_C00,SEQ_S00_O05_R02_C00,SEQ_S00_O05_R02_C00,SEQ_S00_O05_R06_C00,SEQ_S00_O05_R06_C00
+    byte SEQ_S00_O02_R0c_C00,SEQ_S00_O05_R09_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O05_R0c_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O04_R0a_C00,SEQ_S00_O02_R05_C00
+    byte 255
+; Subsong: 0 Channel: 0 Pattern: 12 / 
+PAT_S00_C00_P0c_ADDR
+    byte SEQ_S00_O00_R04_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O02_R02_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O02_R02_C00,SEQ_S00_O02_R05_C00,SEQ_S00_O02_R06_C00,SEQ_S00_O02_R07_C00
+    byte SEQ_S00_O02_R08_C00,SEQ_S00_O02_R09_C00,SEQ_S00_O02_R09_C00,SEQ_S00_O02_R0b_C00,SEQ_S00_O02_R0c_C00,SEQ_S00_O02_R0d_C00,SEQ_S00_O02_R0e_C00,SEQ_S00_O00_R0b_C00
+    byte 255
+; Subsong: 0 Channel: 0 Pattern: 6 / 
+PAT_S00_C00_P06_ADDR
+    byte SEQ_S00_O00_R04_C00,SEQ_S00_O00_R01_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R0b_C00,SEQ_S00_O01_R05_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R02_C00
+    byte SEQ_S00_O00_R04_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O00_R04_C00,SEQ_S00_O00_R01_C00,SEQ_S00_O02_R05_C00,SEQ_S00_O02_R06_C00,SEQ_S00_O02_R02_C00,SEQ_S00_O0b_R0b_C01
+    byte 255
+; Subsong: 0 Channel: 1 Pattern: 2 / 
+PAT_S00_C01_P02_ADDR
+    byte SEQ_S00_O00_R01_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R02_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R01_C01,SEQ_S00_O00_R02_C01,SEQ_S00_O00_R01_C01
+    byte SEQ_S00_O00_R01_C01,SEQ_S00_O00_R0c_C00,SEQ_S00_O02_R02_C00,SEQ_S00_O0b_R0b_C01,SEQ_S00_O0b_R0c_C01,SEQ_S00_O0b_R0d_C01,SEQ_S00_O0b_R0e_C01,SEQ_S00_O00_R0f_C00
+    byte 255
+; Subsong: 0 Channel: 0 Pattern: 7 / 
+PAT_S00_C00_P07_ADDR
+    byte SEQ_S00_O04_R0e_C00,SEQ_S00_O04_R0f_C00,SEQ_S00_O0c_R02_C00,SEQ_S00_O0c_R02_C00,SEQ_S00_O0c_R02_C00,SEQ_S00_O04_R0e_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O04_R0e_C00
+    byte SEQ_S00_O05_R0c_C00,SEQ_S00_O00_R02_C00,SEQ_S00_O00_R0f_C00,SEQ_S00_O04_R0e_C00,SEQ_S00_O04_R0f_C00,SEQ_S00_O04_R0a_C00,SEQ_S00_O02_R05_C00,SEQ_S00_O00_R04_C00
+    byte 255
+; Subsong: 0 Channel: 0 Pattern: 8 / 
+PAT_S00_C00_P08_ADDR
+    byte SEQ_S00_O04_R09_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O04_R09_C00,SEQ_S00_O00_R0c_C00,SEQ_S00_O00_R04_C00,SEQ_S00_O02_R07_C00,SEQ_S00_O02_R08_C00,SEQ_S00_O02_R05_C00
+    byte SEQ_S00_O02_R06_C00,SEQ_S00_O0d_R09_C00,SEQ_S00_O0d_R09_C00,SEQ_S00_O0d_R0b_C00,SEQ_S00_O0d_R0b_C00,SEQ_S00_O02_R0c_C00,SEQ_S00_O05_R09_C00,SEQ_S00_O05_R09_C00
+    byte 255
+; Subsong: 0 Channel: 0 Pattern: 9 / 
+PAT_S00_C00_P09_ADDR
+    byte SEQ_S00_O04_R0a_C00,SEQ_S00_O0e_R01_C00,SEQ_S00_O04_R0a_C00,SEQ_S00_O04_R0a_C00,SEQ_S00_O0e_R01_C00,SEQ_S00_O04_R0a_C00,SEQ_S00_O04_R0e_C00,SEQ_S00_O04_R0a_C00
+    byte SEQ_S00_O00_R02_C00,SEQ_S00_O04_R0e_C00,SEQ_S00_O04_R0f_C00,SEQ_S00_O04_R0a_C00,SEQ_S00_O0e_R01_C00,SEQ_S00_O02_R07_C00,SEQ_S00_O00_R04_C00,SEQ_S00_O04_R09_C00
+    byte 255
+; Subsong: 0 Channel: 0 Pattern: 10 / 
+PAT_S00_C00_P0a_ADDR
+    byte SEQ_S00_O02_R0e_C00,SEQ_S00_O0f_R01_C00,SEQ_S00_O02_R0e_C00,SEQ_S00_O0f_R01_C00,SEQ_S00_O04_R09_C00,SEQ_S00_O00_R04_C00,SEQ_S00_O00_R01_C00,SEQ_S00_O0f_R07_C00
+    byte SEQ_S00_O03_R07_C00,SEQ_S00_O00_R04_C00,SEQ_S00_O00_R01_C00,SEQ_S00_O02_R05_C00,SEQ_S00_O02_R06_C00,SEQ_S00_O01_R0d_C00,SEQ_S00_O01_R0e_C00,SEQ_S00_O01_R0f_C00
+    byte 255
+
+; Waveform Lookup Table
+NUM_WAVEFORMS = 48
+WF_TABLE_START_LO
+SEQ_S00_O00_R0c_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O00_R0c_C00_ADDR
+SEQ_S00_O01_R0b_C01 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O01_R0b_C01_ADDR
+SEQ_S00_O00_R01_C01 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O00_R01_C01_ADDR
+SEQ_S00_O00_R00_C01 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O00_R00_C01_ADDR
+SEQ_S00_O00_R02_C01 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O00_R02_C01_ADDR
+SEQ_S00_O05_R09_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O05_R09_C00_ADDR
+SEQ_S00_O0b_R0d_C01 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O0b_R0d_C01_ADDR
+SEQ_S00_O01_R0f_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O01_R0f_C00_ADDR
+SEQ_S00_O05_R0c_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O05_R0c_C00_ADDR
+SEQ_S00_O0d_R0b_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O0d_R0b_C00_ADDR
+SEQ_S00_O0b_R0b_C01 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O0b_R0b_C01_ADDR
+SEQ_S00_O01_R0e_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O01_R0e_C00_ADDR
+SEQ_S00_O0b_R0e_C01 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O0b_R0e_C01_ADDR
+SEQ_S00_O00_R02_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O00_R02_C00_ADDR
+SEQ_S00_O05_R06_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O05_R06_C00_ADDR
+SEQ_S00_O0f_R01_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O0f_R01_C00_ADDR
+SEQ_S00_O02_R0c_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O02_R0c_C00_ADDR
+SEQ_S00_O0d_R09_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O0d_R09_C00_ADDR
+SEQ_S00_O02_R06_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O02_R06_C00_ADDR
+SEQ_S00_O04_R0e_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O04_R0e_C00_ADDR
+SEQ_S00_O02_R0d_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O02_R0d_C00_ADDR
+SEQ_S00_O01_R05_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O01_R05_C00_ADDR
+SEQ_S00_O04_R0a_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O04_R0a_C00_ADDR
+SEQ_S00_O05_R02_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O05_R02_C00_ADDR
+SEQ_S00_O00_R0f_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O00_R0f_C00_ADDR
+SEQ_S00_O02_R05_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O02_R05_C00_ADDR
+SEQ_S00_O00_R0b_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O00_R0b_C00_ADDR
+SEQ_S00_O02_R07_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O02_R07_C00_ADDR
+SEQ_S00_O01_R0a_C01 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O01_R0a_C01_ADDR
+SEQ_S00_O0c_R02_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O0c_R02_C00_ADDR
+SEQ_S00_O04_R0f_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O04_R0f_C00_ADDR
+SEQ_S00_O00_R04_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O00_R04_C00_ADDR
+SEQ_S00_O03_R07_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O03_R07_C00_ADDR
+SEQ_S00_O04_R09_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O04_R09_C00_ADDR
+SEQ_S00_O0b_R0c_C01 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O0b_R0c_C01_ADDR
+SEQ_S00_O00_R00_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O00_R00_C00_ADDR
+SEQ_S00_O01_R0d_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O01_R0d_C00_ADDR
+SEQ_S00_O02_R02_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O02_R02_C00_ADDR
+SEQ_S00_O0f_R07_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O0f_R07_C00_ADDR
+SEQ_S00_O00_R01_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O00_R01_C00_ADDR
+SEQ_S00_O03_R0b_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O03_R0b_C00_ADDR
+SEQ_S00_O02_R0b_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O02_R0b_C00_ADDR
+SEQ_S00_O0e_R01_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O0e_R01_C00_ADDR
+SEQ_S00_O02_R0e_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O02_R0e_C00_ADDR
+SEQ_S00_O02_R09_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O02_R09_C00_ADDR
+SEQ_S00_O02_R08_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O02_R08_C00_ADDR
+SEQ_S00_O03_R09_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O03_R09_C00_ADDR
+SEQ_S00_O03_R08_C00 = . - WF_TABLE_START_LO
+   byte <SEQ_S00_O03_R08_C00_ADDR
+WF_TABLE_START_HI
+   byte >SEQ_S00_O00_R0c_C00_ADDR
+   byte >SEQ_S00_O01_R0b_C01_ADDR
+   byte >SEQ_S00_O00_R01_C01_ADDR
+   byte >SEQ_S00_O00_R00_C01_ADDR
+   byte >SEQ_S00_O00_R02_C01_ADDR
+   byte >SEQ_S00_O05_R09_C00_ADDR
+   byte >SEQ_S00_O0b_R0d_C01_ADDR
+   byte >SEQ_S00_O01_R0f_C00_ADDR
+   byte >SEQ_S00_O05_R0c_C00_ADDR
+   byte >SEQ_S00_O0d_R0b_C00_ADDR
+   byte >SEQ_S00_O0b_R0b_C01_ADDR
+   byte >SEQ_S00_O01_R0e_C00_ADDR
+   byte >SEQ_S00_O0b_R0e_C01_ADDR
+   byte >SEQ_S00_O00_R02_C00_ADDR
+   byte >SEQ_S00_O05_R06_C00_ADDR
+   byte >SEQ_S00_O0f_R01_C00_ADDR
+   byte >SEQ_S00_O02_R0c_C00_ADDR
+   byte >SEQ_S00_O0d_R09_C00_ADDR
+   byte >SEQ_S00_O02_R06_C00_ADDR
+   byte >SEQ_S00_O04_R0e_C00_ADDR
+   byte >SEQ_S00_O02_R0d_C00_ADDR
+   byte >SEQ_S00_O01_R05_C00_ADDR
+   byte >SEQ_S00_O04_R0a_C00_ADDR
+   byte >SEQ_S00_O05_R02_C00_ADDR
+   byte >SEQ_S00_O00_R0f_C00_ADDR
+   byte >SEQ_S00_O02_R05_C00_ADDR
+   byte >SEQ_S00_O00_R0b_C00_ADDR
+   byte >SEQ_S00_O02_R07_C00_ADDR
+   byte >SEQ_S00_O01_R0a_C01_ADDR
+   byte >SEQ_S00_O0c_R02_C00_ADDR
+   byte >SEQ_S00_O04_R0f_C00_ADDR
+   byte >SEQ_S00_O00_R04_C00_ADDR
+   byte >SEQ_S00_O03_R07_C00_ADDR
+   byte >SEQ_S00_O04_R09_C00_ADDR
+   byte >SEQ_S00_O0b_R0c_C01_ADDR
+   byte >SEQ_S00_O00_R00_C00_ADDR
+   byte >SEQ_S00_O01_R0d_C00_ADDR
+   byte >SEQ_S00_O02_R02_C00_ADDR
+   byte >SEQ_S00_O0f_R07_C00_ADDR
+   byte >SEQ_S00_O00_R01_C00_ADDR
+   byte >SEQ_S00_O03_R0b_C00_ADDR
+   byte >SEQ_S00_O02_R0b_C00_ADDR
+   byte >SEQ_S00_O0e_R01_C00_ADDR
+   byte >SEQ_S00_O02_R0e_C00_ADDR
+   byte >SEQ_S00_O02_R09_C00_ADDR
+   byte >SEQ_S00_O02_R08_C00_ADDR
+   byte >SEQ_S00_O03_R09_C00_ADDR
+   byte >SEQ_S00_O03_R08_C00_ADDR
+
+; Waveforms
+SEQ_S00_O00_R0c_C00_ADDR
+; Hash 672915152, Freq 41
+    ;F0 C0 V0 D12
+    byte 4,11,0
+    byte 0
+SEQ_S00_O01_R0b_C01_ADDR
+; Hash 901646758, Freq 2
+    ;F12 C8 V1 D6
+    byte 100,5,129
+    ;F0 C0 V0 D6
+    byte 4,5,0
+    byte 0
+SEQ_S00_O00_R01_C01_ADDR
+; Hash 1498735977, Freq 332
+    ;F1 C8 V3 D1
+    byte 10,131
+    ;F2 C8 V1 D1
+    byte 18,129
+    ;F0 C0 V0 D10
+    byte 4,9,0
+    byte 0
+SEQ_S00_O00_R00_C01_ADDR
+; Hash 1888145576, Freq 1
+    ;F1 C8 V3 D2
+    byte 14,131
+    ;F2 C8 V1 D1
+    byte 18,129
+    ;F0 C0 V0 D10
+    byte 4,9,0
+    byte 0
+SEQ_S00_O00_R02_C01_ADDR
+; Hash 2013056314, Freq 110
+    ;F1 C8 V3 D1
+    byte 10,131
+    ;F2 C8 V2 D1
+    byte 18,130
+    ;F2 C8 V1 D4
+    byte 20,3,129
+    ;F0 C0 V0 D6
+    byte 4,5,0
+    byte 0
+SEQ_S00_O05_R09_C00_ADDR
+; Hash 3655610203, Freq 8
+    ;F0 C0 V0 D2
+    byte 6,0
+    ;F0 C0 V0 D2
+    byte 6,0
+    ;F0 C0 V0 D1
+    byte 2,0
+    ;F0 C0 V0 D2
+    byte 6,0
+    ;F0 C0 V0 D1
+    byte 2,0
+    ;F0 C0 V0 D2
+    byte 6,0
+    ;F0 C0 V0 D1
+    byte 2,0
+    ;F0 C0 V0 D1
+    byte 2,0
+    byte 0
+SEQ_S00_O0b_R0d_C01_ADDR
+; Hash 4852016212, Freq 2
+    ;F13 C12 V5 D1
+    byte 106,197
+    ;F13 C12 V4 D1
+    byte 33
+    ;F13 C12 V3 D1
+    byte 25
+    ;F13 C12 V3 D1
+    byte 106,195
+    ;F13 C12 V3 D1
+    byte 106,195
+    ;F13 C12 V3 D1
+    byte 106,195
+    ;F13 C12 V3 D1
+    byte 106,195
+    ;F13 C12 V3 D1
+    byte 106,195
+    ;F13 C12 V3 D1
+    byte 106,195
+    ;F13 C12 V3 D1
+    byte 106,195
+    ;F13 C12 V3 D1
+    byte 106,195
+    ;F13 C12 V3 D1
+    byte 106,195
+    byte 0
+SEQ_S00_O01_R0f_C00_ADDR
+; Hash 4889261768, Freq 11
+    ;F10 C6 V4 D1
+    byte 82,100
+    ;F7 C6 V11 D1
+    byte 58,107
+    ;F27 C12 V15 D1
+    byte 218,207
+    ;F27 C12 V15 D1
+    byte 218,207
+    ;F27 C12 V15 D1
+    byte 218,207
+    ;F27 C12 V15 D1
+    byte 218,207
+    ;F27 C12 V15 D1
+    byte 218,207
+    ;F27 C12 V13 D1
+    byte 105
+    ;F27 C12 V12 D1
+    byte 97
+    ;F27 C12 V11 D1
+    byte 89
+    ;F27 C12 V9 D1
+    byte 73
+    ;F27 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O05_R0c_C00_ADDR
+; Hash 5036528927, Freq 6
+    ;F23 C12 V4 D1
+    byte 186,196
+    ;F16 C12 V11 D1
+    byte 130,203
+    ;F11 C12 V15 D1
+    byte 90,207
+    ;F11 C12 V15 D1
+    byte 90,207
+    ;F11 C12 V15 D1
+    byte 90,207
+    ;F11 C12 V15 D1
+    byte 90,207
+    ;F11 C12 V15 D1
+    byte 90,207
+    ;F11 C12 V13 D1
+    byte 105
+    ;F11 C12 V12 D1
+    byte 97
+    ;F11 C12 V11 D1
+    byte 89
+    ;F11 C12 V9 D1
+    byte 73
+    ;F11 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O0d_R0b_C00_ADDR
+; Hash 5105882883, Freq 4
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F10 C12 V3 D1
+    byte 83
+    ;F17 C12 V3 D1
+    byte 139
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F10 C12 V3 D1
+    byte 83
+    ;F17 C12 V3 D1
+    byte 139
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F10 C12 V3 D1
+    byte 83
+    ;F17 C12 V3 D1
+    byte 139
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F10 C12 V3 D1
+    byte 83
+    ;F17 C12 V3 D1
+    byte 139
+    byte 0
+SEQ_S00_O0b_R0b_C01_ADDR
+; Hash 5117847368, Freq 4
+    ;F15 C12 V5 D1
+    byte 122,197
+    ;F15 C12 V4 D1
+    byte 33
+    ;F15 C12 V3 D1
+    byte 25
+    ;F15 C12 V3 D1
+    byte 122,195
+    ;F15 C12 V3 D1
+    byte 122,195
+    ;F15 C12 V3 D1
+    byte 122,195
+    ;F15 C12 V3 D1
+    byte 122,195
+    ;F15 C12 V3 D1
+    byte 122,195
+    ;F15 C12 V3 D1
+    byte 122,195
+    ;F15 C12 V3 D1
+    byte 122,195
+    ;F15 C12 V3 D1
+    byte 122,195
+    ;F15 C12 V3 D1
+    byte 122,195
+    byte 0
+SEQ_S00_O01_R0e_C00_ADDR
+; Hash 5152995772, Freq 7
+    ;F11 C6 V4 D1
+    byte 90,100
+    ;F8 C6 V11 D1
+    byte 66,107
+    ;F29 C12 V15 D1
+    byte 234,207
+    ;F29 C12 V15 D1
+    byte 234,207
+    ;F29 C12 V15 D1
+    byte 234,207
+    ;F29 C12 V15 D1
+    byte 234,207
+    ;F29 C12 V15 D1
+    byte 234,207
+    ;F29 C12 V13 D1
+    byte 105
+    ;F29 C12 V12 D1
+    byte 97
+    ;F29 C12 V11 D1
+    byte 89
+    ;F29 C12 V9 D1
+    byte 73
+    ;F29 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O0b_R0e_C01_ADDR
+; Hash 5169444505, Freq 2
+    ;F24 C12 V4 D1
+    byte 194,196
+    ;F17 C12 V11 D1
+    byte 138,203
+    ;F12 C12 V15 D1
+    byte 98,207
+    ;F12 C12 V15 D1
+    byte 98,207
+    ;F12 C12 V15 D1
+    byte 98,207
+    ;F12 C12 V15 D1
+    byte 98,207
+    ;F12 C12 V15 D1
+    byte 98,207
+    ;F12 C12 V13 D1
+    byte 105
+    ;F12 C12 V12 D1
+    byte 97
+    ;F12 C12 V11 D1
+    byte 89
+    ;F12 C12 V9 D1
+    byte 73
+    ;F12 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O00_R02_C00_ADDR
+; Hash 5171607193, Freq 46
+    ;F26 C12 V4 D1
+    byte 210,196
+    ;F18 C12 V11 D1
+    byte 146,203
+    ;F12 C12 V15 D1
+    byte 98,207
+    ;F12 C12 V15 D1
+    byte 98,207
+    ;F12 C12 V15 D1
+    byte 98,207
+    ;F12 C12 V15 D1
+    byte 98,207
+    ;F12 C12 V15 D1
+    byte 98,207
+    ;F12 C12 V13 D1
+    byte 105
+    ;F12 C12 V12 D1
+    byte 97
+    ;F12 C12 V11 D1
+    byte 89
+    ;F12 C12 V9 D1
+    byte 73
+    ;F12 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O05_R06_C00_ADDR
+; Hash 5208417925, Freq 8
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F24 C4 V3 D1
+    byte 194,67
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F24 C4 V3 D1
+    byte 194,67
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F24 C4 V3 D1
+    byte 194,67
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F24 C4 V3 D1
+    byte 194,67
+    ;F12 C12 V3 D1
+    byte 98,195
+    byte 0
+SEQ_S00_O0f_R01_C00_ADDR
+; Hash 5314087561, Freq 4
+    ;F24 C12 V5 D1
+    byte 194,197
+    ;F24 C12 V4 D1
+    byte 33
+    ;F24 C12 V3 D1
+    byte 25
+    ;F24 C12 V3 D1
+    byte 194,195
+    ;F24 C12 V3 D1
+    byte 194,195
+    ;F24 C12 V3 D1
+    byte 194,195
+    ;F24 C12 V3 D1
+    byte 194,195
+    ;F24 C12 V3 D1
+    byte 194,195
+    ;F24 C12 V3 D1
+    byte 194,195
+    ;F24 C12 V3 D1
+    byte 194,195
+    ;F24 C12 V3 D1
+    byte 194,195
+    ;F24 C12 V3 D1
+    byte 194,195
+    byte 0
+SEQ_S00_O02_R0c_C00_ADDR
+; Hash 5359447658, Freq 14
+    ;F0 C0 V0 D1
+    byte 2,0
+    ;F0 C0 V0 D1
+    byte 2,0
+    ;F0 C0 V0 D2
+    byte 6,0
+    ;F0 C0 V0 D1
+    byte 2,0
+    ;F0 C0 V0 D2
+    byte 6,0
+    ;F0 C0 V0 D1
+    byte 2,0
+    ;F0 C0 V0 D2
+    byte 6,0
+    ;F0 C0 V0 D1
+    byte 2,0
+    ;F0 C0 V0 D1
+    byte 2,0
+    byte 0
+SEQ_S00_O0d_R09_C00_ADDR
+; Hash 5383670076, Freq 4
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    byte 0
+SEQ_S00_O02_R06_C00_ADDR
+; Hash 5383678524, Freq 14
+    ;F17 C12 V5 D1
+    byte 138,197
+    ;F17 C12 V4 D1
+    byte 33
+    ;F17 C12 V3 D1
+    byte 25
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    ;F17 C12 V3 D1
+    byte 138,195
+    byte 0
+SEQ_S00_O04_R0e_C00_ADDR
+; Hash 5437503885, Freq 16
+    ;F29 C12 V4 D1
+    byte 234,196
+    ;F20 C12 V11 D1
+    byte 162,203
+    ;F14 C12 V15 D1
+    byte 114,207
+    ;F14 C12 V15 D1
+    byte 114,207
+    ;F14 C12 V15 D1
+    byte 114,207
+    ;F14 C12 V15 D1
+    byte 114,207
+    ;F14 C12 V15 D1
+    byte 114,207
+    ;F14 C12 V13 D1
+    byte 105
+    ;F14 C12 V12 D1
+    byte 97
+    ;F14 C12 V11 D1
+    byte 89
+    ;F14 C12 V9 D1
+    byte 73
+    ;F14 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O02_R0d_C00_ADDR
+; Hash 5535243470, Freq 8
+    ;F9 C6 V4 D1
+    byte 74,100
+    ;F31 C12 V11 D1
+    byte 250,203
+    ;F23 C12 V15 D1
+    byte 186,207
+    ;F23 C12 V15 D1
+    byte 186,207
+    ;F23 C12 V15 D1
+    byte 186,207
+    ;F23 C12 V15 D1
+    byte 186,207
+    ;F23 C12 V15 D1
+    byte 186,207
+    ;F23 C12 V13 D1
+    byte 105
+    ;F23 C12 V12 D1
+    byte 97
+    ;F23 C12 V11 D1
+    byte 89
+    ;F23 C12 V9 D1
+    byte 73
+    ;F23 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O01_R05_C00_ADDR
+; Hash 5579918717, Freq 3
+    ;F26 C12 V5 D1
+    byte 210,197
+    ;F26 C12 V4 D1
+    byte 33
+    ;F26 C12 V3 D1
+    byte 25
+    ;F26 C12 V3 D1
+    byte 210,195
+    ;F26 C12 V3 D1
+    byte 210,195
+    ;F26 C12 V3 D1
+    byte 210,195
+    ;F26 C12 V3 D1
+    byte 210,195
+    ;F26 C12 V3 D1
+    byte 210,195
+    ;F26 C12 V3 D1
+    byte 210,195
+    ;F26 C12 V3 D1
+    byte 210,195
+    ;F26 C12 V3 D1
+    byte 210,195
+    ;F26 C12 V3 D1
+    byte 210,195
+    byte 0
+SEQ_S00_O04_R0a_C00_ADDR
+; Hash 5705366657, Freq 26
+    ;F31 C12 V4 D1
+    byte 250,196
+    ;F23 C12 V11 D1
+    byte 186,203
+    ;F16 C12 V15 D1
+    byte 130,207
+    ;F16 C12 V15 D1
+    byte 130,207
+    ;F16 C12 V15 D1
+    byte 130,207
+    ;F16 C12 V15 D1
+    byte 130,207
+    ;F16 C12 V15 D1
+    byte 130,207
+    ;F16 C12 V13 D1
+    byte 105
+    ;F16 C12 V12 D1
+    byte 97
+    ;F16 C12 V11 D1
+    byte 89
+    ;F16 C12 V9 D1
+    byte 73
+    ;F16 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O05_R02_C00_ADDR
+; Hash 5719092195, Freq 16
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    byte 0
+SEQ_S00_O00_R0f_C00_ADDR
+; Hash 5719100643, Freq 10
+    ;F12 C12 V5 D1
+    byte 98,197
+    ;F12 C12 V4 D1
+    byte 33
+    ;F12 C12 V3 D1
+    byte 25
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    ;F12 C12 V3 D1
+    byte 98,195
+    byte 0
+SEQ_S00_O02_R05_C00_ADDR
+; Hash 5735915003, Freq 28
+    ;F6 C6 V4 D1
+    byte 50,100
+    ;F24 C12 V11 D1
+    byte 194,203
+    ;F17 C12 V15 D1
+    byte 138,207
+    ;F17 C12 V15 D1
+    byte 138,207
+    ;F17 C12 V15 D1
+    byte 138,207
+    ;F17 C12 V15 D1
+    byte 138,207
+    ;F17 C12 V15 D1
+    byte 138,207
+    ;F17 C12 V13 D1
+    byte 105
+    ;F17 C12 V12 D1
+    byte 97
+    ;F17 C12 V11 D1
+    byte 89
+    ;F17 C12 V9 D1
+    byte 73
+    ;F17 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O00_R0b_C00_ADDR
+; Hash 5758443351, Freq 26
+    ;F10 C6 V4 D1
+    byte 82,100
+    ;F7 C6 V11 D1
+    byte 58,107
+    ;F26 C12 V15 D1
+    byte 210,207
+    ;F26 C12 V15 D1
+    byte 210,207
+    ;F26 C12 V15 D1
+    byte 210,207
+    ;F26 C12 V15 D1
+    byte 210,207
+    ;F26 C12 V15 D1
+    byte 210,207
+    ;F26 C12 V13 D1
+    byte 105
+    ;F26 C12 V12 D1
+    byte 97
+    ;F26 C12 V11 D1
+    byte 89
+    ;F26 C12 V9 D1
+    byte 73
+    ;F26 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O02_R07_C00_ADDR
+; Hash 5870862197, Freq 8
+    ;F7 C6 V4 D1
+    byte 58,100
+    ;F26 C12 V11 D1
+    byte 210,203
+    ;F18 C12 V15 D1
+    byte 146,207
+    ;F18 C12 V15 D1
+    byte 146,207
+    ;F18 C12 V15 D1
+    byte 146,207
+    ;F18 C12 V15 D1
+    byte 146,207
+    ;F18 C12 V15 D1
+    byte 146,207
+    ;F18 C12 V13 D1
+    byte 105
+    ;F18 C12 V12 D1
+    byte 97
+    ;F18 C12 V11 D1
+    byte 89
+    ;F18 C12 V9 D1
+    byte 73
+    ;F18 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O01_R0a_C01_ADDR
+; Hash 5928540432, Freq 2
+    ;F7 C8 V15 D1
+    byte 58,143
+    ;F21 C8 V12 D1
+    byte 170,140
+    ;F15 C8 V10 D1
+    byte 122,138
+    ;F9 C8 V8 D1
+    byte 74,136
+    ;F15 C8 V7 D1
+    byte 122,135
+    ;F10 C8 V6 D1
+    byte 82,134
+    ;F13 C8 V5 D1
+    byte 106,133
+    ;F12 C8 V4 D1
+    byte 98,132
+    ;F13 C8 V4 D1
+    byte 107
+    ;F12 C8 V3 D1
+    byte 98,131
+    ;F13 C8 V3 D1
+    byte 107
+    ;F12 C8 V2 D1
+    byte 98,130
+    byte 0
+SEQ_S00_O0c_R02_C00_ADDR
+; Hash 5984923351, Freq 6
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    byte 0
+SEQ_S00_O04_R0f_C00_ADDR
+; Hash 5984931799, Freq 10
+    ;F14 C12 V5 D1
+    byte 114,197
+    ;F14 C12 V4 D1
+    byte 33
+    ;F14 C12 V3 D1
+    byte 25
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    ;F14 C12 V3 D1
+    byte 114,195
+    byte 0
+SEQ_S00_O00_R04_C00_ADDR
+; Hash 6003712239, Freq 40
+    ;F7 C6 V4 D1
+    byte 58,100
+    ;F27 C12 V11 D1
+    byte 218,203
+    ;F19 C12 V15 D1
+    byte 154,207
+    ;F19 C12 V15 D1
+    byte 154,207
+    ;F19 C12 V15 D1
+    byte 154,207
+    ;F19 C12 V15 D1
+    byte 154,207
+    ;F19 C12 V15 D1
+    byte 154,207
+    ;F19 C12 V13 D1
+    byte 105
+    ;F19 C12 V12 D1
+    byte 97
+    ;F19 C12 V11 D1
+    byte 89
+    ;F19 C12 V9 D1
+    byte 73
+    ;F19 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O03_R07_C00_ADDR
+; Hash 6138659433, Freq 6
+    ;F8 C6 V4 D1
+    byte 66,100
+    ;F29 C12 V11 D1
+    byte 234,203
+    ;F20 C12 V15 D1
+    byte 162,207
+    ;F20 C12 V15 D1
+    byte 162,207
+    ;F20 C12 V15 D1
+    byte 162,207
+    ;F20 C12 V15 D1
+    byte 162,207
+    ;F20 C12 V15 D1
+    byte 162,207
+    ;F20 C12 V13 D1
+    byte 105
+    ;F20 C12 V12 D1
+    byte 97
+    ;F20 C12 V11 D1
+    byte 89
+    ;F20 C12 V9 D1
+    byte 73
+    ;F20 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O04_R09_C00_ADDR
+; Hash 6273541091, Freq 12
+    ;F8 C6 V4 D1
+    byte 66,100
+    ;F31 C12 V11 D1
+    byte 250,203
+    ;F21 C12 V15 D1
+    byte 170,207
+    ;F21 C12 V15 D1
+    byte 170,207
+    ;F21 C12 V15 D1
+    byte 170,207
+    ;F21 C12 V15 D1
+    byte 170,207
+    ;F21 C12 V15 D1
+    byte 170,207
+    ;F21 C12 V13 D1
+    byte 105
+    ;F21 C12 V12 D1
+    byte 97
+    ;F21 C12 V11 D1
+    byte 89
+    ;F21 C12 V9 D1
+    byte 73
+    ;F21 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O0b_R0c_C01_ADDR
+; Hash 6304522780, Freq 2
+    ;F27 C12 V4 D1
+    byte 218,196
+    ;F19 C12 V11 D1
+    byte 154,203
+    ;F13 C12 V15 D1
+    byte 106,207
+    ;F13 C12 V15 D1
+    byte 106,207
+    ;F13 C12 V15 D1
+    byte 106,207
+    ;F13 C12 V15 D1
+    byte 106,207
+    ;F13 C12 V15 D1
+    byte 106,207
+    ;F13 C12 V13 D1
+    byte 105
+    ;F13 C12 V12 D1
+    byte 97
+    ;F13 C12 V11 D1
+    byte 89
+    ;F13 C12 V9 D1
+    byte 73
+    ;F13 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O00_R00_C00_ADDR
+; Hash 6393121838, Freq 1
+    ;F7 C6 V4 D2
+    byte 62,100
+    ;F27 C12 V11 D1
+    byte 218,203
+    ;F19 C12 V15 D1
+    byte 154,207
+    ;F19 C12 V15 D1
+    byte 154,207
+    ;F19 C12 V15 D1
+    byte 154,207
+    ;F19 C12 V15 D1
+    byte 154,207
+    ;F19 C12 V15 D1
+    byte 154,207
+    ;F19 C12 V13 D1
+    byte 105
+    ;F19 C12 V12 D1
+    byte 97
+    ;F19 C12 V11 D1
+    byte 89
+    ;F19 C12 V9 D1
+    byte 73
+    ;F19 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O01_R0d_C00_ADDR
+; Hash 6414698169, Freq 7
+    ;F12 C6 V4 D1
+    byte 98,100
+    ;F8 C6 V11 D1
+    byte 66,107
+    ;F31 C12 V15 D1
+    byte 250,207
+    ;F31 C12 V15 D1
+    byte 250,207
+    ;F31 C12 V15 D1
+    byte 250,207
+    ;F31 C12 V15 D1
+    byte 250,207
+    ;F31 C12 V15 D1
+    byte 250,207
+    ;F31 C12 V13 D1
+    byte 105
+    ;F31 C12 V12 D1
+    byte 97
+    ;F31 C12 V11 D1
+    byte 89
+    ;F31 C12 V9 D1
+    byte 73
+    ;F31 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O02_R02_C00_ADDR
+; Hash 6570485008, Freq 12
+    ;F31 C12 V4 D1
+    byte 250,196
+    ;F21 C12 V11 D1
+    byte 170,203
+    ;F15 C12 V15 D1
+    byte 122,207
+    ;F15 C12 V15 D1
+    byte 122,207
+    ;F15 C12 V15 D1
+    byte 122,207
+    ;F15 C12 V15 D1
+    byte 122,207
+    ;F15 C12 V15 D1
+    byte 122,207
+    ;F15 C12 V13 D1
+    byte 105
+    ;F15 C12 V12 D1
+    byte 97
+    ;F15 C12 V11 D1
+    byte 89
+    ;F15 C12 V9 D1
+    byte 73
+    ;F15 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O0f_R07_C00_ADDR
+; Hash 6649501241, Freq 2
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    byte 0
+SEQ_S00_O00_R01_C00_ADDR
+; Hash 6649509689, Freq 19
+    ;F19 C12 V5 D1
+    byte 154,197
+    ;F19 C12 V4 D1
+    byte 33
+    ;F19 C12 V3 D1
+    byte 25
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    ;F19 C12 V3 D1
+    byte 154,195
+    byte 0
+SEQ_S00_O03_R0b_C00_ADDR
+; Hash 7179231462, Freq 4
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F12 C12 V3 D1
+    byte 99
+    ;F20 C12 V3 D1
+    byte 163
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F12 C12 V3 D1
+    byte 99
+    ;F20 C12 V3 D1
+    byte 163
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F12 C12 V3 D1
+    byte 99
+    ;F20 C12 V3 D1
+    byte 163
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F12 C12 V3 D1
+    byte 99
+    ;F20 C12 V3 D1
+    byte 163
+    byte 0
+SEQ_S00_O02_R0b_C00_ADDR
+; Hash 7238798479, Freq 4
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F11 C12 V3 D1
+    byte 91
+    ;F18 C12 V3 D1
+    byte 147
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F11 C12 V3 D1
+    byte 91
+    ;F18 C12 V3 D1
+    byte 147
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F11 C12 V3 D1
+    byte 91
+    ;F18 C12 V3 D1
+    byte 147
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F11 C12 V3 D1
+    byte 91
+    ;F18 C12 V3 D1
+    byte 147
+    byte 0
+SEQ_S00_O0e_R01_C00_ADDR
+; Hash 7250762964, Freq 6
+    ;F16 C12 V5 D1
+    byte 130,197
+    ;F16 C12 V4 D1
+    byte 33
+    ;F16 C12 V3 D1
+    byte 25
+    ;F16 C12 V3 D1
+    byte 130,195
+    ;F16 C12 V3 D1
+    byte 130,195
+    ;F16 C12 V3 D1
+    byte 130,195
+    ;F16 C12 V3 D1
+    byte 130,195
+    ;F16 C12 V3 D1
+    byte 130,195
+    ;F16 C12 V3 D1
+    byte 130,195
+    ;F16 C12 V3 D1
+    byte 130,195
+    ;F16 C12 V3 D1
+    byte 130,195
+    ;F16 C12 V3 D1
+    byte 130,195
+    byte 0
+SEQ_S00_O02_R0e_C00_ADDR
+; Hash 7494709365, Freq 8
+    ;F9 C6 V4 D1
+    byte 74,100
+    ;F6 C6 V11 D1
+    byte 50,107
+    ;F24 C12 V15 D1
+    byte 194,207
+    ;F24 C12 V15 D1
+    byte 194,207
+    ;F24 C12 V15 D1
+    byte 194,207
+    ;F24 C12 V15 D1
+    byte 194,207
+    ;F24 C12 V15 D1
+    byte 194,207
+    ;F24 C12 V13 D1
+    byte 105
+    ;F24 C12 V12 D1
+    byte 97
+    ;F24 C12 V11 D1
+    byte 89
+    ;F24 C12 V9 D1
+    byte 73
+    ;F24 C12 V7 D1
+    byte 57
+    byte 0
+SEQ_S00_O02_R09_C00_ADDR
+; Hash 7516585672, Freq 8
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    byte 0
+SEQ_S00_O02_R08_C00_ADDR
+; Hash 7516594120, Freq 6
+    ;F18 C12 V5 D1
+    byte 146,197
+    ;F18 C12 V4 D1
+    byte 33
+    ;F18 C12 V3 D1
+    byte 25
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    ;F18 C12 V3 D1
+    byte 146,195
+    byte 0
+SEQ_S00_O03_R09_C00_ADDR
+; Hash 7782416828, Freq 8
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    byte 0
+SEQ_S00_O03_R08_C00_ADDR
+; Hash 7782425276, Freq 4
+    ;F20 C12 V5 D1
+    byte 162,197
+    ;F20 C12 V4 D1
+    byte 33
+    ;F20 C12 V3 D1
+    byte 25
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    ;F20 C12 V3 D1
+    byte 162,195
+    byte 0
+
+; Song Table Size 2
+; Song Data Size 59
+; Pattern Lookup Table Size 30
+; Pattern Data Size 255
+; Waveform Lookup Table Size 96
+; Waveform Data Size 956
+; Total Data Size 1398
