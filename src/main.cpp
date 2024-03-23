@@ -74,6 +74,7 @@ bool consoleMode=true;
 #endif
 
 bool displayEngineFailError=false;
+bool cmdOutBinary=false;
 bool vgmOutDirect=false;
 
 bool safeMode=false;
@@ -152,6 +153,11 @@ TAParamResult pSafeModeAudio(String val) {
   logE("Furnace was compiled without the GUI. safe mode is pointless.");
   return TA_PARAM_ERROR;
 #endif
+}
+
+TAParamResult pBinary(String val) {
+  cmdOutBinary=true;
+  return TA_PARAM_SUCCESS;
 }
 
 TAParamResult pDirect(String val) {
