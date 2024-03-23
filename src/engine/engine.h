@@ -599,6 +599,8 @@ class DivEngine {
   // add every export method here
   friend class DivROMExport;
   friend class DivExportAmigaValidation;
+  friend class DivExportAtari2600;
+  friend class DivExportAtariLynx;
 
   public:
     DivSong song;
