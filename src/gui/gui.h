@@ -485,6 +485,7 @@ enum FurnaceGUIWindows {
   GUI_WINDOW_INTRO_MON,
   GUI_WINDOW_MEMORY,
   GUI_WINDOW_CS_PLAYER,
+  GUI_WINDOW_USER_PRESETS,
   GUI_WINDOW_SPOILER
 };
 
@@ -578,6 +579,7 @@ enum FurnaceGUIWarnings {
   GUI_WARN_SUBSONG_DEL,
   GUI_WARN_SYSTEM_DEL,
   GUI_WARN_CLEAR_HISTORY,
+  GUI_WARN_CV,
   GUI_WARN_GENERIC
 };
 
@@ -677,6 +679,7 @@ enum FurnaceGUIActions {
   GUI_ACTION_WINDOW_XY_OSC,
   GUI_ACTION_WINDOW_MEMORY,
   GUI_ACTION_WINDOW_CS_PLAYER,
+  GUI_ACTION_WINDOW_USER_PRESETS,
 
   GUI_ACTION_COLLAPSE_WINDOW,
   GUI_ACTION_CLOSE_WINDOW,
@@ -885,12 +888,6 @@ enum FurnaceGUIChanOscRef {
   GUI_OSCREF_NOTE_TRIGGER,
 
   GUI_OSCREF_MAX
-};
-
-enum FurnaceGUITutorials {
-  GUI_TUTORIAL_OVERVIEW=0,
-  
-  GUI_TUTORIAL_MAX
 };
 
 enum PasteMode {
@@ -1231,22 +1228,24 @@ struct Gradient2D {
 
 struct FurnaceGUISysDefChip {
   DivSystem sys;
-  float vol, pan;
-  const char* flags;
-  FurnaceGUISysDefChip(DivSystem s, float v, float p, const char* f):
+  float vol, pan, panFR;
+  String flags;
+  FurnaceGUISysDefChip(DivSystem s, float v, float p, const char* f, float pf=0.0):
     sys(s),
     vol(v),
     pan(p),
+    panFR(pf),
     flags(f) {}
 };
 
 struct FurnaceGUISysDef {
-  const char* name;
-  const char* extra;
+  String name;
+  String extra;
   String definition;
   std::vector<FurnaceGUISysDefChip> orig;
   std::vector<FurnaceGUISysDef> subDefs;
   FurnaceGUISysDef(const char* n, std::initializer_list<FurnaceGUISysDefChip> def, const char* e=NULL);
+  FurnaceGUISysDef(const char* n, const char* def, DivEngine* e);
 };
 
 struct FurnaceGUISysCategory {
@@ -1259,31 +1258,6 @@ struct FurnaceGUISysCategory {
   FurnaceGUISysCategory():
     name(NULL),
     description(NULL) {}
-};
-
-typedef std::function<void()> TutorialFunc;
-
-struct FurnaceGUITutorialStep {
-  const char* text;
-  int waitForTrigger;
-  TutorialFunc run;
-  TutorialFunc runBefore;
-  TutorialFunc runAfter;
-  
-  FurnaceGUITutorialStep(const char* t, int trigger=-1, TutorialFunc activeFunc=NULL, TutorialFunc beginFunc=NULL, TutorialFunc endFunc=NULL):
-    text(t),
-    waitForTrigger(trigger),
-    run(activeFunc),
-    runBefore(beginFunc),
-    runAfter(endFunc) {}
-};
-
-struct FurnaceGUITutorialDef {
-  const char* name;
-  std::vector<FurnaceGUITutorialStep> steps;
-  FurnaceGUITutorialDef():
-    name("Help!") {}
-  FurnaceGUITutorialDef(const char* n, std::initializer_list<FurnaceGUITutorialStep> step);
 };
 
 struct FurnaceGUIMacroDesc {
@@ -1452,13 +1426,14 @@ class FurnaceGUIRender {
     virtual bool lockTexture(FurnaceGUITexture* which, void** data, int* pitch);
     virtual bool unlockTexture(FurnaceGUITexture* which);
     virtual bool updateTexture(FurnaceGUITexture* which, void* data, int pitch);
-    virtual FurnaceGUITexture* createTexture(bool dynamic, int width, int height);
+    virtual FurnaceGUITexture* createTexture(bool dynamic, int width, int height, bool interpolate=true);
     virtual bool destroyTexture(FurnaceGUITexture* which);
     virtual void setTextureBlendMode(FurnaceGUITexture* which, FurnaceGUIBlendMode mode);
     virtual void setBlendMode(FurnaceGUIBlendMode mode);
     virtual void resized(const SDL_Event& ev);
     virtual void clear(ImVec4 color);
     virtual bool newFrame();
+    virtual bool canVSync();
     virtual void createFontsTexture();
     virtual void destroyFontsTexture();
     virtual void renderGUI();
@@ -1470,8 +1445,9 @@ class FurnaceGUIRender {
     virtual bool regenOscShader(const char* fragment);
     virtual bool getOutputSize(int& w, int& h);
     virtual int getWindowFlags();
+    virtual void setSwapInterval(int swapInterval);
     virtual void preInit();
-    virtual bool init(SDL_Window* win);
+    virtual bool init(SDL_Window* win, int swapInterval);
     virtual void initGUI(SDL_Window* win);
     virtual void quitGUI();
     virtual bool quit();
@@ -1497,6 +1473,8 @@ struct PendingDrawOsc {
     lineSize(0.0f) {}
 };
 
+struct FurnaceCV;
+
 class FurnaceGUI {
   DivEngine* e;
 
@@ -1506,7 +1484,10 @@ class FurnaceGUI {
   SDL_Window* sdlWin;
   SDL_Haptic* vibrator;
   bool vibratorAvailable;
-  
+
+  FurnaceCV* cv;
+  FurnaceGUITexture* cvTex;
+
   FurnaceGUITexture* sampleTex;
   int sampleTexW, sampleTexH;
   bool updateSampleTex;
@@ -1536,7 +1517,6 @@ class FurnaceGUI {
   bool wantCaptureKeyboard, oldWantCaptureKeyboard, displayMacroMenu;
   bool displayNew, displayExport, displayPalette, fullScreen, preserveChanPos, sysDupCloneChannels, sysDupEnd, wantScrollList, noteInputPoly, notifyWaveChange;
   bool displayPendingIns, pendingInsSingle, displayPendingRawSample, snesFilterHex, modTableHex, displayEditString;
-  bool shaderEditor;
   bool mobileEdit;
   bool killGraphics;
   bool safeMode;
@@ -1546,6 +1526,7 @@ class FurnaceGUI {
   bool willExport[DIV_MAX_CHIPS];
   int vgmExportVersion;
   int vgmExportTrailingTicks;
+  int cvHiScore;
   int drawHalt;
   int zsmExportTickRate;
   int macroPointSize;
@@ -1647,6 +1628,18 @@ class FurnaceGUI {
     int opl2Core;
     int opl3Core;
     int esfmCore;
+    int opllCore;
+    int bubsysQuality;
+    int dsidQuality;
+    int gbQuality;
+    int ndsQuality;
+    int pceQuality;
+    int pnQuality;
+    int saaQuality;
+    int sccQuality;
+    int smQuality; 
+    int swanQuality;
+    int vbQuality;
     int arcadeCoreRender;
     int ym2612CoreRender;
     int snCoreRender;
@@ -1658,6 +1651,18 @@ class FurnaceGUI {
     int opl2CoreRender;
     int opl3CoreRender;
     int esfmCoreRender;
+    int opllCoreRender;
+    int bubsysQualityRender;
+    int dsidQualityRender;
+    int gbQualityRender;
+    int ndsQualityRender;
+    int pceQualityRender;
+    int pnQualityRender;
+    int saaQualityRender;
+    int sccQualityRender;
+    int smQualityRender; 
+    int swanQualityRender;
+    int vbQualityRender;
     int pcSpeakerOutMethod;
     String yrw801Path;
     String tg100Path;
@@ -1815,6 +1820,8 @@ class FurnaceGUI {
     int playbackTime;
     int shaderOsc;
     int cursorWheelStep;
+    int vsync;
+    int frameRateLimit;
     unsigned int maxUndoSteps;
     String mainFontPath;
     String headFontPath;
@@ -1855,6 +1862,7 @@ class FurnaceGUI {
       opl2Core(0),
       opl3Core(0),
       esfmCore(0),
+      opllCore(0),
       arcadeCoreRender(1),
       ym2612CoreRender(0),
       snCoreRender(0),
@@ -1866,6 +1874,7 @@ class FurnaceGUI {
       opl2CoreRender(0),
       opl3CoreRender(0),
       esfmCoreRender(0),
+      opllCoreRender(0),
       pcSpeakerOutMethod(0),
       yrw801Path(""),
       tg100Path(""),
@@ -2020,6 +2029,8 @@ class FurnaceGUI {
       playbackTime(1),
       shaderOsc(1),
       cursorWheelStep(0),
+      vsync(1),
+      frameRateLimit(60),
       maxUndoSteps(100),
       mainFontPath(""),
       headFontPath(""),
@@ -2040,15 +2051,11 @@ class FurnaceGUI {
   } settings;
 
   struct Tutorial {
-    int userComesFrom;
     bool introPlayed;
     bool protoWelcome;
-    bool taken[GUI_TUTORIAL_MAX];
     Tutorial():
-      userComesFrom(0),
       introPlayed(false),
       protoWelcome(false) {
-      memset(taken,0,GUI_TUTORIAL_MAX*sizeof(bool));
     }
   } tutorial;
 
@@ -2079,7 +2086,9 @@ class FurnaceGUI {
   bool mixerOpen, debugOpen, inspectorOpen, oscOpen, volMeterOpen, statsOpen, compatFlagsOpen;
   bool pianoOpen, notesOpen, channelsOpen, regViewOpen, logOpen, effectListOpen, chanOscOpen;
   bool subSongsOpen, findOpen, spoilerOpen, patManagerOpen, sysManagerOpen, clockOpen, speedOpen;
-  bool groovesOpen, xyOscOpen, memoryOpen, csPlayerOpen;
+  bool groovesOpen, xyOscOpen, memoryOpen, csPlayerOpen, cvOpen, userPresetsOpen;
+
+  bool cvNotSerious;
 
   bool shortIntro;
   bool insListDir, waveListDir, sampleListDir;
@@ -2170,7 +2179,6 @@ class FurnaceGUI {
   std::vector<std::pair<DivInstrument*,bool>> pendingIns;
 
   std::vector<FurnaceGUISysCategory> sysCategories;
-  FurnaceGUITutorialDef tutorials[GUI_TUTORIAL_MAX];
 
   bool wavePreviewOn;
   SDL_Scancode wavePreviewKey;
@@ -2249,6 +2257,7 @@ class FurnaceGUI {
   uint64_t drawTimeBegin, drawTimeEnd, drawTimeDelta;
   uint64_t swapTimeBegin, swapTimeEnd, swapTimeDelta;
   uint64_t eventTimeBegin, eventTimeEnd, eventTimeDelta;
+  uint64_t nextPresentTime;
 
   FurnaceGUIPerfMetric perfMetrics[64];
   int perfMetricsLen;
@@ -2472,6 +2481,10 @@ class FurnaceGUI {
   int dmfExportVersion;
   FurnaceGUIExportTypes curExportType;
 
+  // user presets window
+  int selectedUserPreset;
+  std::vector<String> randomDemoSong;
+
   void drawExportAudio(bool onWindow=false);
   void drawExportVGM(bool onWindow=false);
   void drawExportZSM(bool onWindow=false);
@@ -2608,6 +2621,7 @@ class FurnaceGUI {
   void drawClock();
   void drawTutorial();
   void drawXYOsc();
+  void drawUserPresets();
 
   void parseKeybinds();
   void promptKey(int which);
@@ -2714,8 +2728,9 @@ class FurnaceGUI {
 
   void applyUISettings(bool updateFonts=true);
   void initSystemPresets();
-  void initTutorial();
-  void activateTutorial(FurnaceGUITutorials which);
+
+  void initRandomDemoSong();
+  bool loadRandomDemoSong();
 
   bool loadUserPresets(bool redundancy=true);
   bool saveUserPresets(bool redundancy=true);
