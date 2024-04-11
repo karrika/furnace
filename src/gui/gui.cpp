@@ -4391,11 +4391,9 @@ bool FurnaceGUI::loop() {
           toggleMobileUI(!mobileUI);
         }
 #endif
-        /*
         if (ImGui::MenuItem("manage presets...",BIND_FOR(GUI_ACTION_WINDOW_USER_PRESETS))) {
           userPresetsOpen=true;
         }
-        */
         if (ImGui::MenuItem("settings...",BIND_FOR(GUI_ACTION_WINDOW_SETTINGS))) {
           syncSettings();
           settingsOpen=true;
@@ -4577,7 +4575,7 @@ bool FurnaceGUI::loop() {
                   info=fmt::sprintf("Set volume: %d (%.2X, INVALID!)",p->data[cursor.y][3],p->data[cursor.y][3]);
                 } else {
                   float realVol=e->mapVelocity(cursor.xCoarse,(float)p->data[cursor.y][3]/(float)maxVol);
-                  info=fmt::sprintf("Set volume: %d (%.2X, %d%%)",p->data[cursor.y][3],p->data[cursor.y][3],(int)(realVol*100.0f));
+                  info=fmt::sprintf("Set volume: %d (%.2X, %d%%)",p->data[cursor.y][3],p->data[cursor.y][3],(int)(realVol*100.0f/(float)maxVol));
                 }
                 hasInfo=true;
               }
@@ -6296,6 +6294,19 @@ bool FurnaceGUI::loop() {
     }
 #endif
 
+    if (settings.displayRenderTime) {
+      String renderTime=fmt::sprintf("%.0fµs",ImGui::GetIO().DeltaTime*1000000.0);
+      String renderTime2=fmt::sprintf("%.1f FPS",1.0/ImGui::GetIO().DeltaTime);
+      ImDrawList* dl=ImGui::GetForegroundDrawList();
+      ImVec2 markPos=ImVec2(canvasW-ImGui::CalcTextSize(renderTime.c_str()).x-60.0*dpiScale,4.0*dpiScale);
+      ImVec2 markPos2=ImVec2(canvasW-ImGui::CalcTextSize(renderTime2.c_str()).x-160.0*dpiScale,4.0*dpiScale);
+
+      dl->AddText(markPos,0xffffffff,renderTime.c_str());
+      dl->AddText(markPos2,0xffffffff,renderTime2.c_str());
+
+      //logV("%s (%s)",renderTime,renderTime2);
+    }
+
     layoutTimeEnd=SDL_GetPerformanceCounter();
 
     // backup trigger
@@ -6468,19 +6479,20 @@ bool FurnaceGUI::loop() {
     drawTimeEnd=SDL_GetPerformanceCounter();
     swapTimeBegin=SDL_GetPerformanceCounter();
     if (!settings.vsync || !rend->canVSync()) {
-      unsigned int presentDelay=SDL_GetPerformanceFrequency()/settings.frameRateLimit;
-      if ((nextPresentTime-swapTimeBegin)<presentDelay) {
+      if (settings.frameRateLimit>0) {
+        unsigned int presentDelay=SDL_GetPerformanceFrequency()/settings.frameRateLimit;
+        if ((nextPresentTime-swapTimeBegin)<presentDelay) {
 #ifdef _WIN32
-        unsigned int mDivider=SDL_GetPerformanceFrequency()/1000;
-        Sleep((unsigned int)(nextPresentTime-swapTimeBegin)/mDivider);
+          unsigned int mDivider=SDL_GetPerformanceFrequency()/1000;
+          Sleep((unsigned int)(nextPresentTime-swapTimeBegin)/mDivider);
 #else
-        unsigned int mDivider=SDL_GetPerformanceFrequency()/1000000;
-        usleep((unsigned int)(nextPresentTime-swapTimeBegin)/mDivider);
+          unsigned int mDivider=SDL_GetPerformanceFrequency()/1000000;
+          usleep((unsigned int)(nextPresentTime-swapTimeBegin)/mDivider);
 #endif
-
-        nextPresentTime+=presentDelay;
-      } else {
-        nextPresentTime=swapTimeBegin+presentDelay;
+          nextPresentTime+=presentDelay;
+        } else {
+          nextPresentTime=swapTimeBegin+presentDelay;
+        }
       }
     }
     rend->present();
@@ -6980,10 +6992,6 @@ bool FurnaceGUI::init() {
     SDL_SetHint(SDL_HINT_RENDER_DRIVER,settings.renderDriver.c_str());
   }
 
-  if (safeMode) {
-    SDL_SetHint(SDL_HINT_RENDER_DRIVER,"software");
-  }
-
   logD("starting render backend...");
   if (!rend->init(sdlWin,settings.vsync)) {
     logE("it failed...");
@@ -7041,9 +7049,6 @@ bool FurnaceGUI::init() {
   rend->initGUI(sdlWin);
 
   loadUserPresets(true);
-
-  // NEW CODE - REMOVE WHEN DONE
-  newOscFragment=rend->getStupidFragment();
 
   applyUISettings();
 
@@ -7871,8 +7876,7 @@ FurnaceGUI::FurnaceGUI():
   curTutorialStep(0),
   audioExportType(0),
   dmfExportVersion(0),
-  curExportType(GUI_EXPORT_NONE),
-  selectedUserPreset(-1) {
+  curExportType(GUI_EXPORT_NONE) {
   // value keys
   valueKeys[SDLK_0]=0;
   valueKeys[SDLK_1]=1;

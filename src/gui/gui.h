@@ -56,7 +56,7 @@
 // for now
 #define NOTIFY_LONG_HOLD \
   if (vibrator && vibratorAvailable) { \
-    if (SDL_HapticRumblePlay(vibrator,0.5f,20)!=0) { \
+    if (SDL_HapticRumblePlay(vibrator,settings.vibrationStrength,settings.vibrationLength)!=0) { \
       logV("could not vibrate: %s!",SDL_GetError()); \
     } \
   } else { \
@@ -70,8 +70,12 @@
 
 enum FurnaceGUIRenderBackend {
   GUI_BACKEND_SDL=0,
-  GUI_BACKEND_GL,
-  GUI_BACKEND_DX11
+  GUI_BACKEND_GL3,
+  GUI_BACKEND_GL2,
+  GUI_BACKEND_GL1,
+  GUI_BACKEND_DX11,
+  GUI_BACKEND_DX9,
+  GUI_BACKEND_SOFTWARE
 };
 
 #ifdef HAVE_RENDER_DX11
@@ -79,14 +83,25 @@ enum FurnaceGUIRenderBackend {
 #define GUI_BACKEND_DEFAULT_NAME "DirectX 11"
 #else
 #ifdef HAVE_RENDER_GL
-#define GUI_BACKEND_DEFAULT GUI_BACKEND_GL
-#define GUI_BACKEND_DEFAULT_NAME "OpenGL"
+#ifdef SUPPORT_XP
+#define GUI_BACKEND_DEFAULT GUI_BACKEND_GL1
+#define GUI_BACKEND_DEFAULT_NAME "OpenGL 1.1"
+#else
+#ifdef USE_GLES
+#define GUI_BACKEND_DEFAULT GUI_BACKEND_GL3
+#define GUI_BACKEND_DEFAULT_NAME "OpenGL ES 2.0"
+#else
+#define GUI_BACKEND_DEFAULT GUI_BACKEND_GL3
+#define GUI_BACKEND_DEFAULT_NAME "OpenGL 3.0"
+#endif
+#endif
 #else
 #ifdef HAVE_RENDER_SDL
 #define GUI_BACKEND_DEFAULT GUI_BACKEND_SDL
 #define GUI_BACKEND_DEFAULT_NAME "SDL"
 #else
-#error how did you manage to do that?
+#define GUI_BACKEND_DEFAULT GUI_BACKEND_SOFTWARE
+#define GUI_BACKEDN_DEFAULT_NAME "Software"
 #endif
 #endif
 #endif
@@ -1423,6 +1438,8 @@ enum FurnaceGUIBlendMode {
 class FurnaceGUIRender {
   public:
     virtual ImTextureID getTextureID(FurnaceGUITexture* which);
+    virtual float getTextureU(FurnaceGUITexture* which);
+    virtual float getTextureV(FurnaceGUITexture* which);
     virtual bool lockTexture(FurnaceGUITexture* which, void** data, int* pitch);
     virtual bool unlockTexture(FurnaceGUITexture* which);
     virtual bool updateTexture(FurnaceGUITexture* which, void* data, int pitch);
@@ -1441,10 +1458,14 @@ class FurnaceGUIRender {
     virtual void drawOsc(float* data, size_t len, ImVec2 pos0, ImVec2 pos1, ImVec4 color, ImVec2 canvasSize, float lineWidth);
     virtual void present();
     virtual bool supportsDrawOsc();
-    virtual const char* getStupidFragment();
-    virtual bool regenOscShader(const char* fragment);
     virtual bool getOutputSize(int& w, int& h);
     virtual int getWindowFlags();
+    virtual int getMaxTextureWidth();
+    virtual int getMaxTextureHeight();
+    virtual const char* getBackendName();
+    virtual const char* getVendorName();
+    virtual const char* getDeviceName();
+    virtual const char* getAPIVersion();
     virtual void setSwapInterval(int swapInterval);
     virtual void preInit();
     virtual bool init(SDL_Window* win, int swapInterval);
@@ -1492,7 +1513,6 @@ class FurnaceGUI {
   int sampleTexW, sampleTexH;
   bool updateSampleTex;
 
-  String newOscFragment;
   String workingDir, fileName, clipboard, warnString, errorString, lastError, curFileName, nextFile, sysSearchQuery, newSongQuery, paletteQuery;
   String workingDirSong, workingDirIns, workingDirWave, workingDirSample, workingDirAudioExport;
   String workingDirVGMExport, workingDirZSMExport, workingDirROMExport, workingDirFont, workingDirColors, workingDirKeybinds;
@@ -1710,6 +1730,7 @@ class FurnaceGUI {
     int loadChinese;
     int loadChineseTraditional;
     int loadKorean;
+    int loadFallback;
     int fmLayout;
     int sampleLayout;
     int waveLayout;
@@ -1822,7 +1843,10 @@ class FurnaceGUI {
     int cursorWheelStep;
     int vsync;
     int frameRateLimit;
+    int displayRenderTime;
     unsigned int maxUndoSteps;
+    float vibrationStrength;
+    int vibrationLength;
     String mainFontPath;
     String headFontPath;
     String patFontPath;
@@ -1863,6 +1887,17 @@ class FurnaceGUI {
       opl3Core(0),
       esfmCore(0),
       opllCore(0),
+      bubsysQuality(3),
+      dsidQuality(3),
+      gbQuality(3),
+      ndsQuality(3),
+      pceQuality(3),
+      pnQuality(3),
+      saaQuality(3),
+      sccQuality(3),
+      smQuality(3),
+      swanQuality(3),
+      vbQuality(3),
       arcadeCoreRender(1),
       ym2612CoreRender(0),
       snCoreRender(0),
@@ -1875,6 +1910,17 @@ class FurnaceGUI {
       opl3CoreRender(0),
       esfmCoreRender(0),
       opllCoreRender(0),
+      bubsysQualityRender(3),
+      dsidQualityRender(3),
+      gbQualityRender(3),
+      ndsQualityRender(3),
+      pceQualityRender(3),
+      pnQualityRender(3),
+      saaQualityRender(3),
+      sccQualityRender(3),
+      smQualityRender(3),
+      swanQualityRender(3),
+      vbQualityRender(3),
       pcSpeakerOutMethod(0),
       yrw801Path(""),
       tg100Path(""),
@@ -1920,6 +1966,7 @@ class FurnaceGUI {
       loadChinese(0),
       loadChineseTraditional(0),
       loadKorean(0),
+      loadFallback(1),
       fmLayout(4),
       sampleLayout(0),
       waveLayout(0),
@@ -2031,7 +2078,10 @@ class FurnaceGUI {
       cursorWheelStep(0),
       vsync(1),
       frameRateLimit(60),
+      displayRenderTime(0),
       maxUndoSteps(100),
+      vibrationStrength(0.5f),
+      vibrationLength(100),
       mainFontPath(""),
       headFontPath(""),
       patFontPath(""),
@@ -2482,7 +2532,8 @@ class FurnaceGUI {
   FurnaceGUIExportTypes curExportType;
 
   // user presets window
-  int selectedUserPreset;
+  std::vector<int> selectedUserPreset;
+
   std::vector<String> randomDemoSong;
 
   void drawExportAudio(bool onWindow=false);
@@ -2565,7 +2616,9 @@ class FurnaceGUI {
   void waveListItem(int index, float* wavePreview, int dir, int asset);
   void sampleListItem(int index, int dir, int asset);
 
-  void drawSysDefs(std::vector<FurnaceGUISysDef>& category, bool& accepted, std::vector<int>& sysDefStack);
+  void drawSysDefs(std::vector<FurnaceGUISysDef>& category, bool& accepted, std::vector<int>& sysDefStack, bool& alreadyHover);
+  void printPresets(std::vector<FurnaceGUISysDef>& items, size_t depth, std::vector<int>& depthStack);
+  FurnaceGUISysDef* selectPreset(std::vector<FurnaceGUISysDef>& items);
 
   void toggleMobileUI(bool enable, bool force=false);
 
@@ -2744,6 +2797,8 @@ class FurnaceGUI {
 
   bool initRender();
   bool quitRender();
+
+  ImFont* addFontZlib(const void* data, size_t len, float size_pixels, const ImFontConfig* font_cfg=NULL, const ImWchar* glyph_ranges=NULL);
 
   const char* getSystemName(DivSystem which);
   const char* getSystemPartNumber(DivSystem sys, DivConfig& flags);
