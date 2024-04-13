@@ -2,7 +2,7 @@ name: Build furnace
 
 on:
   push:
-    branches: master
+    branches: [master, metal]
   pull_request:
     branches: master
 
@@ -333,6 +333,13 @@ jobs:
 
     - name: Upload artifact
       if: ${{ github.repository == 'tildearrow/furnace' && github.ref_name == 'master' }}
+      uses: actions/upload-artifact@v4.3.0
+      with:
+        name: ${{ steps.package-identify.outputs.id }}
+        path: ${{ steps.package-identify.outputs.filename }}
+
+    - name: Upload Metal artifact
+      if: ${{ github.repository == 'tildearrow/furnace' && github.ref_name == 'metal' }}
       uses: actions/upload-artifact@v4.3.0
       with:
         name: ${{ steps.package-identify.outputs.id }}
