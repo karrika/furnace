@@ -2,7 +2,7 @@ name: Build furnace
 
 on:
   push:
-    branches: [master, metal]
+    branches: master
   pull_request:
     branches: master
 
@@ -260,11 +260,6 @@ jobs:
         echo "removing orig"
         rmdir orig
         rm Furnace-*-Darwin.dmg
-
-        if [ -e new/Furnace.app/Contents/Resources/bin/furnace ]; then
-          rm -v new/Furnace.app/Contents/Resources/bin/furnace
-          rmdir new/Furnace.app/Contents/Resources/bin
-        fi
 
         echo "copying extra stuff"
         cp -v ../LICENSE new/LICENSE.txt
