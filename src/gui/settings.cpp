@@ -44,7 +44,7 @@
 #endif
 
 #ifdef HAVE_FREETYPE
-#define FONT_BACKEND_DEFAULT 0
+#define FONT_BACKEND_DEFAULT 1
 #else
 #define FONT_BACKEND_DEFAULT 0
 #endif
@@ -154,7 +154,8 @@ const char* pokeyCores[]={
 
 const char* opnCores[]={
   "ymfm only",
-  "Nuked-OPN2 (FM) + ymfm (SSG/ADPCM)"
+  "Nuked-OPN2 (FM) + ymfm (SSG/ADPCM)",
+  "YM2608-LLE"
 };
 
 const char* opl2Cores[]={
@@ -177,6 +178,11 @@ const char* esfmCores[]={
 const char* opllCores[]={
   "Nuked-OPLL",
   "emu2413"
+};
+
+const char* ayCores[]={
+  "MAME",
+  "AtomicSSG"
 };
 
 const char* coreQualities[]={
@@ -488,13 +494,15 @@ void FurnaceGUI::drawSettings() {
           settingsChanged=true;
         }
 
-        bool renderClearPosB=settings.renderClearPos;
-        if (ImGui::Checkbox("Late render clear",&renderClearPosB)) {
-          settings.renderClearPos=renderClearPosB;
-          settingsChanged=true;
-        }
-        if (ImGui::IsItemHovered()) {
-          ImGui::SetTooltip("calls rend->clear() after rend->present(). might reduce UI latency by one frame in some drivers.");
+        if (settings.renderBackend!="Metal") {
+          bool renderClearPosB=settings.renderClearPos;
+          if (ImGui::Checkbox("Late render clear",&renderClearPosB)) {
+            settings.renderClearPos=renderClearPosB;
+            settingsChanged=true;
+          }
+          if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("calls rend->clear() after rend->present(). might reduce UI latency by one frame in some drivers.");
+          }
         }
 
         bool powerSaveB=settings.powerSave;
@@ -1704,13 +1712,35 @@ void FurnaceGUI::drawSettings() {
           ImGui::TableNextRow();
           ImGui::TableNextColumn();
           ImGui::AlignTextToFramePadding();
-          ImGui::Text("OPN/OPNA/OPNB");
+          ImGui::Text("OPN");
           ImGui::TableNextColumn();
           ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-          if (ImGui::Combo("##OPNCore",&settings.opnCore,opnCores,2)) settingsChanged=true;
+          if (ImGui::Combo("##OPNCore",&settings.opn1Core,opnCores,3)) settingsChanged=true;
           ImGui::TableNextColumn();
           ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-          if (ImGui::Combo("##OPNCoreRender",&settings.opnCoreRender,opnCores,2)) settingsChanged=true;
+          if (ImGui::Combo("##OPNCoreRender",&settings.opn1CoreRender,opnCores,3)) settingsChanged=true;
+
+          ImGui::TableNextRow();
+          ImGui::TableNextColumn();
+          ImGui::AlignTextToFramePadding();
+          ImGui::Text("OPNA");
+          ImGui::TableNextColumn();
+          ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+          if (ImGui::Combo("##OPNACore",&settings.opnaCore,opnCores,3)) settingsChanged=true;
+          ImGui::TableNextColumn();
+          ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+          if (ImGui::Combo("##OPNACoreRender",&settings.opnaCoreRender,opnCores,3)) settingsChanged=true;
+
+          ImGui::TableNextRow();
+          ImGui::TableNextColumn();
+          ImGui::AlignTextToFramePadding();
+          ImGui::Text("OPNB");
+          ImGui::TableNextColumn();
+          ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+          if (ImGui::Combo("##OPNBCore",&settings.opnbCore,opnCores,3)) settingsChanged=true;
+          ImGui::TableNextColumn();
+          ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+          if (ImGui::Combo("##OPNBCoreRender",&settings.opnbCoreRender,opnCores,3)) settingsChanged=true;
 
           ImGui::TableNextRow();
           ImGui::TableNextColumn();
@@ -1755,6 +1785,17 @@ void FurnaceGUI::drawSettings() {
           ImGui::TableNextColumn();
           ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
           if (ImGui::Combo("##OPLLCoreRender",&settings.opllCoreRender,opllCores,2)) settingsChanged=true;
+
+          ImGui::TableNextRow();
+          ImGui::TableNextColumn();
+          ImGui::AlignTextToFramePadding();
+          ImGui::Text("AY-3-8910/SSG");
+          ImGui::TableNextColumn();
+          ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+          if (ImGui::Combo("##AYCore",&settings.ayCore,ayCores,2)) settingsChanged=true;
+          ImGui::TableNextColumn();
+          ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+          if (ImGui::Combo("##AYCoreRender",&settings.ayCoreRender,ayCores,2)) settingsChanged=true;
 
           ImGui::EndTable();
         }
@@ -2065,6 +2106,10 @@ void FurnaceGUI::drawSettings() {
           UI_KEYBIND_CONFIG(GUI_ACTION_PAT_SELECTION_END);
           UI_KEYBIND_CONFIG(GUI_ACTION_PAT_SELECTION_UP_COARSE);
           UI_KEYBIND_CONFIG(GUI_ACTION_PAT_SELECTION_DOWN_COARSE);
+          UI_KEYBIND_CONFIG(GUI_ACTION_PAT_MOVE_UP);
+          UI_KEYBIND_CONFIG(GUI_ACTION_PAT_MOVE_DOWN);
+          UI_KEYBIND_CONFIG(GUI_ACTION_PAT_MOVE_LEFT_CHANNEL);
+          UI_KEYBIND_CONFIG(GUI_ACTION_PAT_MOVE_RIGHT_CHANNEL);
           UI_KEYBIND_CONFIG(GUI_ACTION_PAT_DELETE);
           UI_KEYBIND_CONFIG(GUI_ACTION_PAT_PULL_DELETE);
           UI_KEYBIND_CONFIG(GUI_ACTION_PAT_INSERT);
@@ -2403,6 +2448,12 @@ void FurnaceGUI::drawSettings() {
         bool pushNibbleB=settings.pushNibble;
         if (ImGui::Checkbox("Push value when overwriting instead of clearing it",&pushNibbleB)) {
           settings.pushNibble=pushNibbleB;
+          settingsChanged=true;
+        }
+
+        bool inputRepeatB=settings.inputRepeat;
+        if (ImGui::Checkbox("Keyboard note/value input repeat (hold key to input continuously)",&inputRepeatB)) {
+          settings.inputRepeat=inputRepeatB;
           settingsChanged=true;
         }
 
@@ -3741,6 +3792,7 @@ void FurnaceGUI::drawSettings() {
           UI_COLOR_CONFIG(GUI_COLOR_INSTR_SM8521,"SM8521");
           UI_COLOR_CONFIG(GUI_COLOR_INSTR_PV1000,"PV-1000");
           UI_COLOR_CONFIG(GUI_COLOR_INSTR_K053260,"K053260");
+          UI_COLOR_CONFIG(GUI_COLOR_INSTR_TED,"TED");
           UI_COLOR_CONFIG(GUI_COLOR_INSTR_C140,"C140");
           UI_COLOR_CONFIG(GUI_COLOR_INSTR_C219,"C219");
           UI_COLOR_CONFIG(GUI_COLOR_INSTR_ESFM,"ESFM");
@@ -3750,6 +3802,8 @@ void FurnaceGUI::drawSettings() {
           UI_COLOR_CONFIG(GUI_COLOR_INSTR_NDS,"Nintendo DS");
           UI_COLOR_CONFIG(GUI_COLOR_INSTR_GBA_DMA,"GBA DMA");
           UI_COLOR_CONFIG(GUI_COLOR_INSTR_GBA_MINMOD,"GBA MinMod");
+          UI_COLOR_CONFIG(GUI_COLOR_INSTR_BIFURCATOR,"Bifurcator");
+          UI_COLOR_CONFIG(GUI_COLOR_INSTR_SID2,"SID2");
           UI_COLOR_CONFIG(GUI_COLOR_INSTR_UNKNOWN,"Other/Unknown");
           ImGui::TreePop();
         }
@@ -4201,17 +4255,19 @@ void FurnaceGUI::readConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
     settings.insTypeMenu=conf.getInt("insTypeMenu",1);
 
     settings.selectAssetOnLoad=conf.getInt("selectAssetOnLoad",1);
+
+    settings.inputRepeat=conf.getInt("inputRepeat",0);
   }
 
   if (groups&GUI_SETTINGS_FONT) {
-    settings.mainFontSize=conf.getInt("mainFontSize",18);
+    settings.mainFontSize=conf.getInt("mainFontSize",GUI_FONT_SIZE_DEFAULT);
     settings.headFontSize=conf.getInt("headFontSize",27);
-    settings.patFontSize=conf.getInt("patFontSize",18);
-    settings.iconSize=conf.getInt("iconSize",16);
+    settings.patFontSize=conf.getInt("patFontSize",GUI_FONT_SIZE_DEFAULT);
+    settings.iconSize=conf.getInt("iconSize",GUI_ICON_SIZE_DEFAULT);
 
-    settings.mainFont=conf.getInt("mainFont",0);
+    settings.mainFont=conf.getInt("mainFont",GUI_MAIN_FONT_DEFAULT);
     settings.headFont=conf.getInt("headFont",0);
-    settings.patFont=conf.getInt("patFont",0);
+    settings.patFont=conf.getInt("patFont",GUI_PAT_FONT_DEFAULT);
     settings.mainFontPath=conf.getString("mainFontPath","");
     settings.headFontPath=conf.getString("headFontPath","");
     settings.patFontPath=conf.getString("patFontPath","");
@@ -4223,15 +4279,15 @@ void FurnaceGUI::readConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
     settings.loadFallback=conf.getInt("loadFallback",1);
 
     settings.fontBackend=conf.getInt("fontBackend",FONT_BACKEND_DEFAULT);
-    settings.fontHinting=conf.getInt("fontHinting",0);
+    settings.fontHinting=conf.getInt("fontHinting",GUI_FONT_HINTING_DEFAULT);
     settings.fontBitmap=conf.getInt("fontBitmap",0);
     settings.fontAutoHint=conf.getInt("fontAutoHint",1);
-    settings.fontAntiAlias=conf.getInt("fontAntiAlias",1);
-    settings.fontOversample=conf.getInt("fontOversample",2);
+    settings.fontAntiAlias=conf.getInt("fontAntiAlias",GUI_FONT_ANTIALIAS_DEFAULT);
+    settings.fontOversample=conf.getInt("fontOversample",GUI_OVERSAMPLE_DEFAULT);
   }
 
   if (groups&GUI_SETTINGS_APPEARANCE) {
-    settings.oscRoundedCorners=conf.getInt("oscRoundedCorners",1);
+    settings.oscRoundedCorners=conf.getInt("oscRoundedCorners",GUI_DECORATIONS_DEFAULT);
     settings.oscTakesEntireWindow=conf.getInt("oscTakesEntireWindow",0);
     settings.oscBorder=conf.getInt("oscBorder",1);
     settings.oscEscapesBoundary=conf.getInt("oscEscapesBoundary",0);
@@ -4247,11 +4303,11 @@ void FurnaceGUI::readConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
     settings.channelFont=conf.getInt("channelFont",1);
     settings.channelTextCenter=conf.getInt("channelTextCenter",1);
 
-    settings.roundedWindows=conf.getInt("roundedWindows",1);
-    settings.roundedButtons=conf.getInt("roundedButtons",1);
+    settings.roundedWindows=conf.getInt("roundedWindows",GUI_DECORATIONS_DEFAULT);
+    settings.roundedButtons=conf.getInt("roundedButtons",GUI_DECORATIONS_DEFAULT);
     settings.roundedMenus=conf.getInt("roundedMenus",0);
-    settings.roundedTabs=conf.getInt("roundedTabs",1);
-    settings.roundedScrollbars=conf.getInt("roundedScrollbars",1);
+    settings.roundedTabs=conf.getInt("roundedTabs",GUI_DECORATIONS_DEFAULT);
+    settings.roundedScrollbars=conf.getInt("roundedScrollbars",GUI_DECORATIONS_DEFAULT);
 
     settings.separateFMColors=conf.getInt("separateFMColors",0);
     settings.insEditColorize=conf.getInt("insEditColorize",0);
@@ -4333,11 +4389,14 @@ void FurnaceGUI::readConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
     settings.fdsCore=conf.getInt("fdsCore",0);
     settings.c64Core=conf.getInt("c64Core",0);
     settings.pokeyCore=conf.getInt("pokeyCore",1);
-    settings.opnCore=conf.getInt("opnCore",1);
+    settings.opn1Core=conf.getInt("opn1Core",1);
+    settings.opnaCore=conf.getInt("opnaCore",1);
+    settings.opnbCore=conf.getInt("opnbCore",1);
     settings.opl2Core=conf.getInt("opl2Core",0);
     settings.opl3Core=conf.getInt("opl3Core",0);
     settings.esfmCore=conf.getInt("esfmCore",0);
     settings.opllCore=conf.getInt("opllCore",0);
+    settings.ayCore=conf.getInt("ayCore",0);
 
     settings.bubsysQuality=conf.getInt("bubsysQuality",3);
     settings.dsidQuality=conf.getInt("dsidQuality",3);
@@ -4358,11 +4417,14 @@ void FurnaceGUI::readConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
     settings.fdsCoreRender=conf.getInt("fdsCoreRender",1);
     settings.c64CoreRender=conf.getInt("c64CoreRender",1);
     settings.pokeyCoreRender=conf.getInt("pokeyCoreRender",1);
-    settings.opnCoreRender=conf.getInt("opnCoreRender",1);
+    settings.opn1CoreRender=conf.getInt("opn1CoreRender",1);
+    settings.opnaCoreRender=conf.getInt("opnaCoreRender",1);
+    settings.opnbCoreRender=conf.getInt("opnbCoreRender",1);
     settings.opl2CoreRender=conf.getInt("opl2CoreRender",0);
     settings.opl3CoreRender=conf.getInt("opl3CoreRender",0);
     settings.esfmCoreRender=conf.getInt("esfmCoreRender",0);
     settings.opllCoreRender=conf.getInt("opllCoreRender",0);
+    settings.ayCoreRender=conf.getInt("ayCoreRender",0);
 
     settings.bubsysQualityRender=conf.getInt("bubsysQualityRender",3);
     settings.dsidQualityRender=conf.getInt("dsidQualityRender",3);
@@ -4400,11 +4462,14 @@ void FurnaceGUI::readConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
   clampSetting(settings.fdsCore,0,1);
   clampSetting(settings.c64Core,0,2);
   clampSetting(settings.pokeyCore,0,1);
-  clampSetting(settings.opnCore,0,1);
+  clampSetting(settings.opn1Core,0,2);
+  clampSetting(settings.opnaCore,0,2);
+  clampSetting(settings.opnbCore,0,2);
   clampSetting(settings.opl2Core,0,2);
   clampSetting(settings.opl3Core,0,2);
   clampSetting(settings.esfmCore,0,1);
   clampSetting(settings.opllCore,0,1);
+  clampSetting(settings.ayCore,0,1);
   clampSetting(settings.bubsysQuality,0,5);
   clampSetting(settings.dsidQuality,0,5);
   clampSetting(settings.gbQuality,0,5);
@@ -4423,11 +4488,14 @@ void FurnaceGUI::readConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
   clampSetting(settings.fdsCoreRender,0,1);
   clampSetting(settings.c64CoreRender,0,2);
   clampSetting(settings.pokeyCoreRender,0,1);
-  clampSetting(settings.opnCoreRender,0,1);
+  clampSetting(settings.opn1CoreRender,0,2);
+  clampSetting(settings.opnaCoreRender,0,2);
+  clampSetting(settings.opnbCoreRender,0,2);
   clampSetting(settings.opl2CoreRender,0,2);
   clampSetting(settings.opl3CoreRender,0,2);
   clampSetting(settings.esfmCoreRender,0,1);
   clampSetting(settings.opllCoreRender,0,1);
+  clampSetting(settings.ayCoreRender,0,1);
   clampSetting(settings.bubsysQualityRender,0,5);
   clampSetting(settings.dsidQualityRender,0,5);
   clampSetting(settings.gbQualityRender,0,5);
@@ -4588,6 +4656,7 @@ void FurnaceGUI::readConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
   clampSetting(settings.displayRenderTime,0,1);
   clampSetting(settings.vibrationStrength,0.0f,1.0f);
   clampSetting(settings.vibrationLength,10,500);
+  clampSetting(settings.inputRepeat,0,1);
 
   if (settings.exportLoops<0.0) settings.exportLoops=0.0;
   if (settings.exportFadeOut<0.0) settings.exportFadeOut=0.0;  
@@ -4740,6 +4809,8 @@ void FurnaceGUI::writeConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
     conf.set("insTypeMenu",settings.insTypeMenu);
     
     conf.set("selectAssetOnLoad",settings.selectAssetOnLoad);
+
+    conf.set("inputRepeat",settings.inputRepeat);
   }
 
   // font
@@ -4877,11 +4948,14 @@ void FurnaceGUI::writeConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
     conf.set("fdsCore",settings.fdsCore);
     conf.set("c64Core",settings.c64Core);
     conf.set("pokeyCore",settings.pokeyCore);
-    conf.set("opnCore",settings.opnCore);
+    conf.set("opn1Core",settings.opn1Core);
+    conf.set("opnaCore",settings.opnaCore);
+    conf.set("opnbCore",settings.opnbCore);
     conf.set("opl2Core",settings.opl2Core);
     conf.set("opl3Core",settings.opl3Core);
     conf.set("esfmCore",settings.esfmCore);
     conf.set("opllCore",settings.opllCore);
+    conf.set("ayCore",settings.ayCore);
 
     conf.set("bubsysQuality",settings.bubsysQuality);
     conf.set("dsidQuality",settings.dsidQuality);
@@ -4902,11 +4976,14 @@ void FurnaceGUI::writeConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
     conf.set("fdsCoreRender",settings.fdsCoreRender);
     conf.set("c64CoreRender",settings.c64CoreRender);
     conf.set("pokeyCoreRender",settings.pokeyCoreRender);
-    conf.set("opnCoreRender",settings.opnCoreRender);
+    conf.set("opn1CoreRender",settings.opn1CoreRender);
+    conf.set("opnaCoreRender",settings.opnaCoreRender);
+    conf.set("opnbCoreRender",settings.opnbCoreRender);
     conf.set("opl2CoreRender",settings.opl2CoreRender);
     conf.set("opl3CoreRender",settings.opl3CoreRender);
     conf.set("esfmCoreRender",settings.esfmCoreRender);
     conf.set("opllCoreRender",settings.opllCoreRender);
+    conf.set("ayCoreRender",settings.ayCoreRender);
 
     conf.set("bubsysQualityRender",settings.bubsysQualityRender);
     conf.set("dsidQualityRender",settings.dsidQualityRender);
@@ -4960,11 +5037,14 @@ void FurnaceGUI::commitSettings() {
     settings.fdsCore!=e->getConfInt("fdsCore",0) ||
     settings.c64Core!=e->getConfInt("c64Core",0) ||
     settings.pokeyCore!=e->getConfInt("pokeyCore",1) ||
-    settings.opnCore!=e->getConfInt("opnCore",1) ||
+    settings.opn1Core!=e->getConfInt("opn1Core",1) ||
+    settings.opnaCore!=e->getConfInt("opnaCore",1) ||
+    settings.opnbCore!=e->getConfInt("opnbCore",1) ||
     settings.opl2Core!=e->getConfInt("opl2Core",0) ||
     settings.opl3Core!=e->getConfInt("opl3Core",0) ||
     settings.esfmCore!=e->getConfInt("esfmCore",0) ||
     settings.opllCore!=e->getConfInt("opllCore",0) ||
+    settings.ayCore!=e->getConfInt("ayCore",0) ||
     settings.bubsysQuality!=e->getConfInt("bubsysQuality",3) ||
     settings.dsidQuality!=e->getConfInt("dsidQuality",3) ||
     settings.gbQuality!=e->getConfInt("gbQuality",3) ||
@@ -5184,6 +5264,14 @@ bool FurnaceGUI::exportLayout(String path) {
   return true;
 }
 
+bool FurnaceGUI::importConfig(String path) {
+  return false;
+}
+
+bool FurnaceGUI::exportConfig(String path) {
+  return false;
+}
+
 void FurnaceGUI::resetColors() {
   for (int i=0; i<GUI_COLOR_MAX; i++) {
     uiColors[i]=ImGui::ColorConvertU32ToFloat4(guiColors[i].defaultColor);
@@ -5195,6 +5283,7 @@ void FurnaceGUI::resetKeybinds() {
     if (guiActions[i].defaultBind==-1) continue;
     actionKeys[i]=guiActions[i].defaultBind;
   }
+  decodeKeyMap(noteKeys,DEFAULT_NOTE_KEYS);
   parseKeybinds();
 }
 
@@ -5436,10 +5525,12 @@ void FurnaceGUI::applyUISettings(bool updateFonts) {
     }
   }
   
-  // chan osc work pool
-  if (chanOscWorkPool!=NULL) {
-    delete chanOscWorkPool;
-    chanOscWorkPool=NULL;
+  if (updateFonts) {
+    // chan osc work pool
+    if (chanOscWorkPool!=NULL) {
+      delete chanOscWorkPool;
+      chanOscWorkPool=NULL;
+    }
   }
 
   for (int i=0; i<64; i++) {
@@ -5780,7 +5871,7 @@ void FurnaceGUI::applyUISettings(bool updateFonts) {
 
     if (settings.mainFont==6 && settings.mainFontPath.empty()) {
       logW("UI font path is empty! reverting to default font");
-      settings.mainFont=0;
+      settings.mainFont=GUI_MAIN_FONT_DEFAULT;
     }
     if (settings.headFont==6 && settings.headFontPath.empty()) {
       logW("header font path is empty! reverting to default font");
@@ -5788,7 +5879,7 @@ void FurnaceGUI::applyUISettings(bool updateFonts) {
     }
     if (settings.patFont==6 && settings.patFontPath.empty()) {
       logW("pattern font path is empty! reverting to default font");
-      settings.patFont=0;
+      settings.patFont=GUI_PAT_FONT_DEFAULT;
     }
 
     ImFontConfig fc1;
@@ -5800,7 +5891,7 @@ void FurnaceGUI::applyUISettings(bool updateFonts) {
     if (settings.mainFont==6) { // custom font
       if ((mainFont=ImGui::GetIO().Fonts->AddFontFromFileTTF(settings.mainFontPath.c_str(),MAX(1,e->getConfInt("mainFontSize",18)*dpiScale),&fontConf,fontRange))==NULL) {
         logW("could not load UI font! reverting to default font");
-        settings.mainFont=0;
+        settings.mainFont=GUI_MAIN_FONT_DEFAULT;
         if ((mainFont=addFontZlib(builtinFont[settings.mainFont],builtinFontLen[settings.mainFont],MAX(1,e->getConfInt("mainFontSize",18)*dpiScale),&fontConf,fontRange))==NULL) {
           logE("could not load UI font! falling back to Proggy Clean.");
           mainFont=ImGui::GetIO().Fonts->AddFontDefault();
@@ -5811,7 +5902,7 @@ void FurnaceGUI::applyUISettings(bool updateFonts) {
         if ((mainFont=ImGui::GetIO().Fonts->AddFontFromFileTTF(SYSTEM_FONT_PATH_2,MAX(1,e->getConfInt("mainFontSize",18)*dpiScale),&fontConf,fontRange))==NULL) {
           if ((mainFont=ImGui::GetIO().Fonts->AddFontFromFileTTF(SYSTEM_FONT_PATH_3,MAX(1,e->getConfInt("mainFontSize",18)*dpiScale),&fontConf,fontRange))==NULL) {
             logW("could not load UI font! reverting to default font");
-            settings.mainFont=0;
+            settings.mainFont=GUI_MAIN_FONT_DEFAULT;
             if ((mainFont=addFontZlib(builtinFont[settings.mainFont],builtinFontLen[settings.mainFont],MAX(1,e->getConfInt("mainFontSize",18)*dpiScale),&fontConf,fontRange))==NULL) {
               logE("could not load UI font! falling back to Proggy Clean.");
               mainFont=ImGui::GetIO().Fonts->AddFontDefault();
@@ -5857,7 +5948,7 @@ void FurnaceGUI::applyUISettings(bool updateFonts) {
       if (settings.patFont==6) { // custom font
         if ((patFont=ImGui::GetIO().Fonts->AddFontFromFileTTF(settings.patFontPath.c_str(),MAX(1,e->getConfInt("patFontSize",18)*dpiScale),&fontConfP,upTo800))==NULL) {
           logW("could not load pattern font! reverting to default font");
-          settings.patFont=0;
+          settings.patFont=GUI_PAT_FONT_DEFAULT;
           if ((patFont=addFontZlib(builtinFontM[settings.patFont],builtinFontMLen[settings.patFont],MAX(1,e->getConfInt("patFontSize",18)*dpiScale),&fontConfP,upTo800))==NULL) {
             logE("could not load pattern font! falling back to Proggy Clean.");
             patFont=ImGui::GetIO().Fonts->AddFontDefault();
@@ -5868,7 +5959,7 @@ void FurnaceGUI::applyUISettings(bool updateFonts) {
           if ((patFont=ImGui::GetIO().Fonts->AddFontFromFileTTF(SYSTEM_PAT_FONT_PATH_2,MAX(1,e->getConfInt("patFontSize",18)*dpiScale),&fontConfP,upTo800))==NULL) {
             if ((patFont=ImGui::GetIO().Fonts->AddFontFromFileTTF(SYSTEM_PAT_FONT_PATH_3,MAX(1,e->getConfInt("patFontSize",18)*dpiScale),&fontConfP,upTo800))==NULL) {
               logW("could not load pattern font! reverting to default font");
-              settings.patFont=0;
+              settings.patFont=GUI_PAT_FONT_DEFAULT;
               if ((patFont=addFontZlib(builtinFontM[settings.patFont],builtinFontMLen[settings.patFont],MAX(1,e->getConfInt("patFontSize",18)*dpiScale),&fontConfP,upTo800))==NULL) {
                 logE("could not load pattern font! falling back to Proggy Clean.");
                 patFont=ImGui::GetIO().Fonts->AddFontDefault();

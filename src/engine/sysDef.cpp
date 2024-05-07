@@ -437,14 +437,24 @@ void DivEngine::registerSystems() {
     {0x2f, {DIV_CMD_AY_IO_WRITE, "2Fxx: Write to I/O port B", constVal<1>, effectVal}},
   };
 
-  EffectHandlerMap ay8930PostEffectHandlerMap(ayPostEffectHandlerMap);
-  ay8930PostEffectHandlerMap.insert({
+  EffectHandlerMap ay8930PostEffectHandlerMap={
+    {0x20, {DIV_CMD_STD_NOISE_MODE, "20xx: Set channel mode (bit 0: square; bit 1: noise; bit 2: envelope)"}},
+    {0x21, {DIV_CMD_STD_NOISE_FREQ, "21xx: Set noise frequency (0 to FF)"}},
+    {0x22, {DIV_CMD_AY_ENVELOPE_SET, "22xy: Set envelope mode (x: shape, y: enable for this channel)"}},
+    {0x23, {DIV_CMD_AY_ENVELOPE_LOW, "23xx: Set envelope period low byte"}},
+    {0x24, {DIV_CMD_AY_ENVELOPE_HIGH, "24xx: Set envelope period high byte"}},
+    {0x25, {DIV_CMD_AY_ENVELOPE_SLIDE, "25xx: Envelope slide up", negEffectVal}},
+    {0x26, {DIV_CMD_AY_ENVELOPE_SLIDE, "26xx: Envelope slide down"}},
+    {0x29, {DIV_CMD_AY_AUTO_ENVELOPE, "29xy: Set auto-envelope (x: numerator; y: denominator)"}},
+    {0x2e, {DIV_CMD_AY_IO_WRITE, "2Exx: Write to I/O port A", constVal<0>, effectVal}},
+    {0x2f, {DIV_CMD_AY_IO_WRITE, "2Fxx: Write to I/O port B", constVal<1>, effectVal}},
     {0x12, {DIV_CMD_STD_NOISE_MODE, "12xx: Set duty cycle (0 to 8)",
       [](unsigned char, unsigned char val) -> int { return 0x10+(val&15); }}},
     {0x27, {DIV_CMD_AY_NOISE_MASK_AND, "27xx: Set noise AND mask"}},
     {0x28, {DIV_CMD_AY_NOISE_MASK_OR, "28xx: Set noise OR mask"}},
+    {0x2c, {DIV_CMD_AY_AUTO_PWM, "2Cxy: Automatic noise frequency (x: mode (0: disable, 1: freq, 2: freq + OR mask); y: offset"}},
     {0x2d, {DIV_CMD_AY_IO_WRITE, "2Dxx: NOT TO BE EMPLOYED BY THE COMPOSER", constVal<255>, effectVal}},
-  });
+  };
 
   EffectHandlerMap fmEffectHandlerMap={
     {0x30, {DIV_CMD_FM_HARD_RESET, "30xx: Toggle hard envelope reset on new notes"}},
@@ -665,6 +675,20 @@ void DivEngine::registerSystems() {
     fmESFMPostEffectHandlerMap.emplace(0x30+i,fmESFMFixFreqFNumHandler[i/4]);
   }
 
+  EffectHandlerMap SID2PostEffectHandlerMap={
+    {0x10, {DIV_CMD_WAVE, "10xx: Set waveform (bit 0: triangle; bit 1: saw; bit 2: pulse; bit 3: noise)"}},
+    {0x11, {DIV_CMD_C64_RESONANCE, "11xx: Set resonance (0 to FF)"}},
+    {0x12, {DIV_CMD_C64_FILTER_MODE, "12xx: Set filter mode (bit 0: low pass; bit 1: band pass; bit 2: high pass)"}},
+    {0x13, {DIV_CMD_C64_RESET_MASK, "13xx: Disable envelope reset for this channel (1 disables; 0 enables)"}},
+    {0x14, {DIV_CMD_C64_FILTER_RESET, "14xy: Reset cutoff (x: on new note; y: now)"}},
+    {0x15, {DIV_CMD_C64_DUTY_RESET, "15xy: Reset pulse width (x: on new note; y: now)"}},
+    {0x16, {DIV_CMD_C64_EXTENDED, "16xy: Change other parameters"}},
+  };
+  const EffectHandler SID2FineDutyHandler(DIV_CMD_C64_FINE_DUTY, "3xxx: Set pulse width (0 to FFF)", effectValLong<12>);
+  const EffectHandler SID2FineCutoffHandler(DIV_CMD_C64_FINE_CUTOFF, "4xxx: Set cutoff (0 to FFF)", effectValLong<11>);
+  for (int i=0; i<16; i++) SID2PostEffectHandlerMap.emplace(0x30+i,SID2FineDutyHandler);
+  for (int i=0; i<16; i++) SID2PostEffectHandlerMap.emplace(0x40+i,SID2FineCutoffHandler);
+
   // SysDefs
 
   // this chip uses YMZ ADPCM, but the emulator uses ADPCM-B because I got it wrong back then.
@@ -777,7 +801,7 @@ void DivEngine::registerSystems() {
   );
 
   sysDefs[DIV_SYSTEM_C64_6581]=new DivSysDef(
-    "Commodore 64 (6581)", NULL, 0x47, 0x47, 3, false, true, 0, false, 0, 0, 0,
+    "Commodore 64 (SID 6581)", NULL, 0x47, 0x47, 3, false, true, 0, false, 0, 0, 0,
     "this computer is powered by the SID chip, which had synthesizer features like a filter and ADSR.",
     {"Channel 1", "Channel 2", "Channel 3"},
     {"CH1", "CH2", "CH3"},
@@ -789,7 +813,7 @@ void DivEngine::registerSystems() {
   );
 
   sysDefs[DIV_SYSTEM_C64_8580]=new DivSysDef(
-    "Commodore 64 (8580)", NULL, 0x07, 0x07, 3, false, true, 0, false, 0, 0, 0,
+    "Commodore 64 (SID 8580)", NULL, 0x07, 0x07, 3, false, true, 0, false, 0, 0, 0,
     "this computer is powered by the SID chip, which had synthesizer features like a filter and ADSR.\nthis is the newer revision of the chip.",
     {"Channel 1", "Channel 2", "Channel 3"},
     {"CH1", "CH2", "CH3"},
@@ -885,7 +909,7 @@ void DivEngine::registerSystems() {
   );
 
   sysDefs[DIV_SYSTEM_TIA]=new DivSysDef(
-    "Atari 2600", NULL, 0x84, 0, 2, false, true, 0, false, 0, 0, 0,
+    "Atari TIA", NULL, 0x84, 0, 2, false, true, 0, false, 0, 0, 0,
     "it's a challenge to make music on this chip which barely has musical capabilities...",
     {"Channel 1", "Channel 2"},
     {"CH1", "CH2"},
@@ -2089,6 +2113,34 @@ void DivEngine::registerSystems() {
       {0x19, {DIV_CMD_NES_LINEAR_LENGTH, "19xx: Set triangle linear counter (0 to 7F; 80 and higher halt)"}},
       {0x20, {DIV_CMD_SAMPLE_FREQ, "20xx: Set DPCM frequency (0 to F)"}}
     }
+  );
+
+  sysDefs[DIV_SYSTEM_BIFURCATOR]=new DivSysDef(
+    "Bifurcator", NULL, 0xd9, 0, 4, false, true, 0, false, 0, 0, 0,
+    "a fantasy sound chip using logistic map iterations to generate sound.",
+    {"Channel 1", "Channel 2", "Channel 3", "Channel 4"},
+    {"CH1", "CH2", "CH3", "CH4"},
+    {DIV_CH_NOISE, DIV_CH_NOISE, DIV_CH_NOISE, DIV_CH_NOISE},
+    {DIV_INS_BIFURCATOR, DIV_INS_BIFURCATOR, DIV_INS_BIFURCATOR, DIV_INS_BIFURCATOR},
+    {},
+    {
+      {0x10, {DIV_CMD_BIFURCATOR_STATE_LOAD, "10xx: Load low byte of channel sample state", constVal<0>, effectVal}},
+      {0x11, {DIV_CMD_BIFURCATOR_STATE_LOAD, "11xx: Load high byte of channel sample state", constVal<1>, effectVal}},
+      {0x12, {DIV_CMD_BIFURCATOR_PARAMETER, "12xx: Set low byte of channel parameter", constVal<0>, effectVal}},
+      {0x13, {DIV_CMD_BIFURCATOR_PARAMETER, "13xx: Set high byte of channel parameter", constVal<1>, effectVal}},
+    }
+  );
+
+  sysDefs[DIV_SYSTEM_SID2]=new DivSysDef(   
+    "SID2", NULL, 0xf0, 0, 3, false, true, 0, false, 0, 0, 0,
+    "a fantasy sound chip created by LTVA. it is similar to the SID chip, but with many of its problems fixed.",
+    {"Channel 1", "Channel 2", "Channel 3"},
+    {"CH1", "CH2", "CH3"},
+    {DIV_CH_NOISE, DIV_CH_NOISE, DIV_CH_NOISE},
+    {DIV_INS_SID2, DIV_INS_SID2, DIV_INS_SID2},
+    {},
+    {}, 
+    SID2PostEffectHandlerMap
   );
 
   sysDefs[DIV_SYSTEM_DUMMY]=new DivSysDef(

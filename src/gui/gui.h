@@ -112,6 +112,30 @@ enum FurnaceGUIRenderBackend {
 #endif
 #endif
 
+#ifdef SUPPORT_XP
+#define GUI_WIDTH_DEFAULT 800
+#define GUI_HEIGHT_DEFAULT 600
+#define GUI_MAIN_FONT_DEFAULT 3
+#define GUI_PAT_FONT_DEFAULT 3
+#define GUI_FONT_SIZE_DEFAULT 13
+#define GUI_ICON_SIZE_DEFAULT 12
+#define GUI_OVERSAMPLE_DEFAULT 1
+#define GUI_FONT_ANTIALIAS_DEFAULT 0
+#define GUI_FONT_HINTING_DEFAULT 1
+#define GUI_DECORATIONS_DEFAULT 0
+#else
+#define GUI_WIDTH_DEFAULT 1280
+#define GUI_HEIGHT_DEFAULT 800
+#define GUI_MAIN_FONT_DEFAULT 0
+#define GUI_PAT_FONT_DEFAULT 0
+#define GUI_FONT_SIZE_DEFAULT 18
+#define GUI_ICON_SIZE_DEFAULT 16
+#define GUI_OVERSAMPLE_DEFAULT 2
+#define GUI_FONT_ANTIALIAS_DEFAULT 1
+#define GUI_FONT_HINTING_DEFAULT 0
+#define GUI_DECORATIONS_DEFAULT 1
+#endif
+
 // TODO:
 // - add colors for FM envelope and waveform
 // - maybe add "alternate" color for FM modulators/carriers (a bit difficult)
@@ -319,6 +343,8 @@ enum FurnaceGUIColors {
   GUI_COLOR_INSTR_NDS,
   GUI_COLOR_INSTR_GBA_DMA,
   GUI_COLOR_INSTR_GBA_MINMOD,
+  GUI_COLOR_INSTR_BIFURCATOR,
+  GUI_COLOR_INSTR_SID2,
   GUI_COLOR_INSTR_UNKNOWN,
 
   GUI_COLOR_CHANNEL_BG,
@@ -573,9 +599,14 @@ enum FurnaceGUIFileDialogs {
   GUI_FILE_IMPORT_COLORS,
   GUI_FILE_IMPORT_KEYBINDS,
   GUI_FILE_IMPORT_LAYOUT,
+  GUI_FILE_IMPORT_USER_PRESETS,
+  GUI_FILE_IMPORT_USER_PRESETS_REPLACE,
+  GUI_FILE_IMPORT_CONFIG,
   GUI_FILE_EXPORT_COLORS,
   GUI_FILE_EXPORT_KEYBINDS,
   GUI_FILE_EXPORT_LAYOUT,
+  GUI_FILE_EXPORT_USER_PRESETS,
+  GUI_FILE_EXPORT_CONFIG,
   GUI_FILE_YRW801_ROM_OPEN,
   GUI_FILE_TG100_ROM_OPEN,
   GUI_FILE_MU5_ROM_OPEN,
@@ -747,6 +778,10 @@ enum FurnaceGUIActions {
   GUI_ACTION_PAT_SELECTION_END,
   GUI_ACTION_PAT_SELECTION_UP_COARSE,
   GUI_ACTION_PAT_SELECTION_DOWN_COARSE,
+  GUI_ACTION_PAT_MOVE_UP,
+  GUI_ACTION_PAT_MOVE_DOWN,
+  GUI_ACTION_PAT_MOVE_LEFT_CHANNEL,
+  GUI_ACTION_PAT_MOVE_RIGHT_CHANNEL,
   GUI_ACTION_PAT_DELETE,
   GUI_ACTION_PAT_PULL_DELETE,
   GUI_ACTION_PAT_INSERT,
@@ -1524,6 +1559,7 @@ class FurnaceGUI {
   String workingDirSong, workingDirIns, workingDirWave, workingDirSample, workingDirAudioExport;
   String workingDirVGMExport, workingDirZSMExport, workingDirROMExport, workingDirFont, workingDirColors, workingDirKeybinds;
   String workingDirLayout, workingDirROM, workingDirTest;
+  String workingDirConfig;
   String mmlString[32];
   String mmlStringW, grooveString, grooveListString, mmlStringModTable;
   String mmlStringSNES[DIV_MAX_CHIPS];
@@ -1544,6 +1580,7 @@ class FurnaceGUI {
   bool wantCaptureKeyboard, oldWantCaptureKeyboard, displayMacroMenu;
   bool displayNew, displayExport, displayPalette, fullScreen, preserveChanPos, sysDupCloneChannels, sysDupEnd, wantScrollList, noteInputPoly, notifyWaveChange;
   bool displayPendingIns, pendingInsSingle, displayPendingRawSample, snesFilterHex, modTableHex, displayEditString;
+  bool changeCoarse;
   bool mobileEdit;
   bool killGraphics;
   bool safeMode;
@@ -1651,11 +1688,14 @@ class FurnaceGUI {
     int fdsCore;
     int c64Core;
     int pokeyCore;
-    int opnCore;
+    int opn1Core;
+    int opnaCore;
+    int opnbCore;
     int opl2Core;
     int opl3Core;
     int esfmCore;
     int opllCore;
+    int ayCore;
     int bubsysQuality;
     int dsidQuality;
     int gbQuality;
@@ -1674,11 +1714,14 @@ class FurnaceGUI {
     int fdsCoreRender;
     int c64CoreRender;
     int pokeyCoreRender;
-    int opnCoreRender;
+    int opn1CoreRender;
+    int opnaCoreRender;
+    int opnbCoreRender;
     int opl2CoreRender;
     int opl3CoreRender;
     int esfmCoreRender;
     int opllCoreRender;
+    int ayCoreRender;
     int bubsysQualityRender;
     int dsidQualityRender;
     int gbQualityRender;
@@ -1852,6 +1895,7 @@ class FurnaceGUI {
     int vsync;
     int frameRateLimit;
     int displayRenderTime;
+    int inputRepeat;
     unsigned int maxUndoSteps;
     float vibrationStrength;
     int vibrationLength;
@@ -1875,10 +1919,10 @@ class FurnaceGUI {
 
     Settings():
       settingsChanged(false),
-      mainFontSize(18),
-      patFontSize(18),
+      mainFontSize(GUI_FONT_SIZE_DEFAULT),
+      patFontSize(GUI_FONT_SIZE_DEFAULT),
       headFontSize(27),
-      iconSize(16),
+      iconSize(GUI_ICON_SIZE_DEFAULT),
       audioEngine(DIV_AUDIO_SDL),
       audioQuality(0),
       audioHiPass(1),
@@ -1890,11 +1934,14 @@ class FurnaceGUI {
       fdsCore(0),
       c64Core(0),
       pokeyCore(1),
-      opnCore(1),
+      opn1Core(1),
+      opnaCore(1),
+      opnbCore(1),
       opl2Core(0),
       opl3Core(0),
       esfmCore(0),
       opllCore(0),
+      ayCore(0),
       bubsysQuality(3),
       dsidQuality(3),
       gbQuality(3),
@@ -1913,11 +1960,14 @@ class FurnaceGUI {
       fdsCoreRender(1),
       c64CoreRender(1),
       pokeyCoreRender(1),
-      opnCoreRender(1),
+      opn1CoreRender(1),
+      opnaCoreRender(1),
+      opnbCoreRender(1),
       opl2CoreRender(0),
       opl3CoreRender(0),
       esfmCoreRender(0),
       opllCoreRender(0),
+      ayCoreRender(0),
       bubsysQualityRender(3),
       dsidQualityRender(3),
       gbQualityRender(3),
@@ -2079,7 +2129,7 @@ class FurnaceGUI {
       fontBitmap(0),
       fontAutoHint(1),
       fontAntiAlias(1),
-      fontOversample(2),
+      fontOversample(GUI_OVERSAMPLE_DEFAULT),
       selectAssetOnLoad(1),
       basicColors(1),
       playbackTime(1),
@@ -2088,6 +2138,7 @@ class FurnaceGUI {
       vsync(1),
       frameRateLimit(60),
       displayRenderTime(0),
+      inputRepeat(0),
       maxUndoSteps(100),
       vibrationStrength(0.5f),
       vibrationLength(20),
@@ -2113,7 +2164,11 @@ class FurnaceGUI {
     bool introPlayed;
     bool protoWelcome;
     Tutorial():
+#ifdef SUPPORT_XP
+      introPlayed(true),
+#else
       introPlayed(false),
+#endif
       protoWelcome(false) {
     }
   } tutorial;
@@ -2127,7 +2182,7 @@ class FurnaceGUI {
   int pendingLayoutImportStep;
   FixedQueue<bool*,64> pendingLayoutImportReopen;
 
-  int curIns, curWave, curSample, curOctave, curOrder, playOrder, prevIns, oldRow, editStep, exportLoops, soloChan, orderEditMode, orderCursor;
+  int curIns, curWave, curSample, curOctave, curOrder, playOrder, prevIns, oldRow, editStep, editStepCoarse, exportLoops, soloChan, orderEditMode, orderCursor;
   int loopOrder, loopRow, loopEnd, isClipping, newSongCategory, latchTarget;
   int wheelX, wheelY, dragSourceX, dragSourceXFine, dragSourceY, dragDestinationX, dragDestinationXFine, dragDestinationY, oldBeat, oldBar;
   int curGroove, exitDisabledTimer;
@@ -2614,6 +2669,7 @@ class FurnaceGUI {
   void drawMacros(std::vector<FurnaceGUIMacroDesc>& macros, FurnaceGUIMacroEditState& state);
   void alterSampleMap(int column, int val);
 
+  void insTabFM(DivInstrument* ins);
   void insTabSample(DivInstrument* ins);
 
   void drawOrderButtons();
@@ -2695,6 +2751,8 @@ class FurnaceGUI {
   bool exportKeybinds(String path);
   bool importLayout(String path);
   bool exportLayout(String path);
+  bool importConfig(String path);
+  bool exportConfig(String path);
 
   float computeGradPos(int type, int chan);
 
@@ -2729,6 +2787,7 @@ class FurnaceGUI {
   void doDelete();
   void doPullDelete();
   void doInsert();
+  void moveSelected(int x, int y);
   void doTranspose(int amount, OperationMask& mask);
   String doCopy(bool cut, bool writeClipboard, const SelectionPoint& sStart, const SelectionPoint& sEnd);
   void doPasteFurnace(PasteMode mode, int arg, bool readClipboard, String clipb, std::vector<String> data, int startOff, bool invalidData, UndoRegion ur);
@@ -2794,8 +2853,8 @@ class FurnaceGUI {
   void initRandomDemoSong();
   bool loadRandomDemoSong();
 
-  bool loadUserPresets(bool redundancy=true);
-  bool saveUserPresets(bool redundancy=true);
+  bool loadUserPresets(bool redundancy=true, String path="", bool append=false);
+  bool saveUserPresets(bool redundancy=true, String path="");
 
   void encodeMMLStr(String& target, int* macro, int macroLen, int macroLoop, int macroRel, bool hex=false, bool bit30=false);
   void decodeMMLStr(String& source, int* macro, unsigned char& macroLen, unsigned char& macroLoop, int macroMin, int macroMax, unsigned char& macroRel, bool bit30=false);

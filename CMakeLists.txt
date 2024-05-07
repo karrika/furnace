@@ -16,7 +16,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_PROJECT_VERSION_MAJOR 0)
 set(CMAKE_PROJECT_VERSION_MINOR 6)
-set(CMAKE_PROJECT_VERSION_PATCH 2)
+set(CMAKE_PROJECT_VERSION_PATCH 3)
 
 set(BUILD_GUI_DEFAULT ON)
 set(USE_SDL2_DEFAULT ON)
@@ -122,6 +122,7 @@ option(WITH_DEMOS "Install demo songs" ON)
 option(WITH_INSTRUMENTS "Install instruments" ON)
 option(WITH_WAVETABLES "Install wavetables" ON)
 option(SHOW_OPEN_ASSETS_MENU_ENTRY "Show option to open built-in assets directory (on supported platforms)" OFF)
+option(CONSOLE_SUBSYSTEM "Build Furnace with Console subsystem on Windows" OFF)
 if (APPLE)
   option(FORCE_APPLE_BIN "Force enable binary installation to /bin" OFF)
 else()
@@ -166,6 +167,7 @@ if (WIN32)
   # support Windows XP
   if (SUPPORT_XP)
     list(APPEND DEPENDENCIES_DEFINES "_WIN32_WINNT=0x0501")
+    list(APPEND DEPENDENCIES_DEFINES "SUPPORT_XP")
   endif()
 endif()
 
@@ -412,6 +414,7 @@ endif()
 set(AUDIO_SOURCES
 src/audio/abstract.cpp
 src/audio/midi.cpp
+src/audio/pipe.cpp
 )
 
 if (USE_SDL2)
@@ -511,6 +514,9 @@ extern/YMF276-LLE/fmopn2.c
 extern/ESFMu/esfm.c
 extern/ESFMu/esfm_registers.c
 extern/emu2413/emu2413.c
+extern/YM2608-LLE/fmopna_2608.c
+extern/YM2608-LLE/fmopna_2610.c
+extern/YM2608-LLE/fmopna_2612.c
 
 extern/pwrnoise/pwrnoise.c
 
@@ -529,6 +535,8 @@ src/engine/platform/sound/nes/fds.c
 src/engine/platform/sound/nes/mmc5.c
 src/engine/platform/sound/vera_psg.c
 src/engine/platform/sound/vera_pcm.c
+
+src/engine/platform/sound/atomicssg/ssg.c
 
 src/engine/platform/sound/nes_nsfplay/5e01_apu.cpp
 src/engine/platform/sound/nes_nsfplay/5e01_dmc.cpp
@@ -629,6 +637,17 @@ src/engine/platform/sound/dave/dave.cpp
 
 src/engine/platform/sound/nds.cpp
 
+src/engine/platform/sound/sid2/envelope.cc
+src/engine/platform/sound/sid2/filter.cc
+src/engine/platform/sound/sid2/sid.cc
+src/engine/platform/sound/sid2/version.cc
+src/engine/platform/sound/sid2/voice.cc
+src/engine/platform/sound/sid2/wave8580_PS_.cc
+src/engine/platform/sound/sid2/wave8580_PST.cc
+src/engine/platform/sound/sid2/wave8580_P_T.cc
+src/engine/platform/sound/sid2/wave8580__ST.cc
+src/engine/platform/sound/sid2/wave.cc
+
 src/engine/platform/oplAInterface.cpp
 src/engine/platform/ym2608Interface.cpp
 src/engine/platform/ym2610Interface.cpp
@@ -641,6 +660,7 @@ src/engine/fileOps/fur.cpp
 src/engine/fileOps/mod.cpp
 src/engine/fileOps/s3m.cpp
 src/engine/fileOps/text.cpp
+src/engine/fileOps/tfm.cpp
 
 src/engine/blip_buf.c
 src/engine/brrUtils.c
@@ -744,6 +764,8 @@ src/engine/platform/dave.cpp
 src/engine/platform/gbadma.cpp
 src/engine/platform/gbaminmod.cpp
 src/engine/platform/nds.cpp
+src/engine/platform/bifurcator.cpp
+src/engine/platform/sid2.cpp
 src/engine/platform/pcmdac.cpp
 src/engine/platform/dummy.cpp
 
@@ -1063,7 +1085,7 @@ elseif (APPLE)
   find_library(COCOA Cocoa REQUIRED)
   list(APPEND DEPENDENCIES_LIBRARIES ${COCOA})
 else()
-  list(APPEND DEPENDENCIES_LIBRARIES dl)
+  list(APPEND DEPENDENCIES_LIBRARIES ${CMAKE_DL_LIBS})
 endif()
 
 if (NOT MSVC)
@@ -1110,9 +1132,13 @@ if (NOT ANDROID OR TERMUX)
   endif()
 endif()
 
+if (WIN32 AND CONSOLE_SUBSYSTEM)
+  list(APPEND DEPENDENCIES_DEFINES "TA_SUBSYSTEM_CONSOLE")
+endif()
+
 if(ANDROID AND NOT TERMUX)
   add_library(furnace SHARED ${USED_SOURCES})
-elseif(WIN32)
+elseif(WIN32 AND NOT CONSOLE_SUBSYSTEM)
   add_executable(furnace WIN32 ${USED_SOURCES})
 else()
   add_executable(furnace ${USED_SOURCES})
@@ -1154,6 +1180,7 @@ if (NOT ANDROID OR TERMUX)
     include(GNUInstallDirs)
     install(TARGETS furnace RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
     install(FILES res/furnace.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+    install(FILES res/mime.xml RENAME furnace.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/packages)
     if (NOT DONT_HAVE_GIT)
       install(FILES ${CMAKE_BINARY_DIR}/furnace.appdata.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
     endif()
