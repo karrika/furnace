@@ -1509,7 +1509,7 @@ class FurnaceGUIRender {
     virtual const char* getDeviceName();
     virtual const char* getAPIVersion();
     virtual void setSwapInterval(int swapInterval);
-    virtual void preInit();
+    virtual void preInit(const DivConfig& conf);
     virtual bool init(SDL_Window* win, int swapInterval);
     virtual void initGUI(SDL_Window* win);
     virtual void quitGUI();
@@ -1896,6 +1896,12 @@ class FurnaceGUI {
     int frameRateLimit;
     int displayRenderTime;
     int inputRepeat;
+    int glRedSize;
+    int glGreenSize;
+    int glBlueSize;
+    int glAlphaSize;
+    int glDepthSize;
+    int glDoubleBuffer;
     unsigned int maxUndoSteps;
     float vibrationStrength;
     int vibrationLength;
@@ -2139,6 +2145,12 @@ class FurnaceGUI {
       frameRateLimit(60),
       displayRenderTime(0),
       inputRepeat(0),
+      glRedSize(8),
+      glGreenSize(8),
+      glBlueSize(8),
+      glAlphaSize(0),
+      glDepthSize(24),
+      glDoubleBuffer(1),
       maxUndoSteps(100),
       vibrationStrength(0.5f),
       vibrationLength(20),
@@ -2182,14 +2194,12 @@ class FurnaceGUI {
   int pendingLayoutImportStep;
   FixedQueue<bool*,64> pendingLayoutImportReopen;
 
-  int curIns, curWave, curSample, curOctave, curOrder, playOrder, prevIns, oldRow, editStep, editStepCoarse, exportLoops, soloChan, orderEditMode, orderCursor;
+  int curIns, curWave, curSample, curOctave, curOrder, playOrder, prevIns, oldRow, editStep, editStepCoarse, soloChan, orderEditMode, orderCursor;
   int loopOrder, loopRow, loopEnd, isClipping, newSongCategory, latchTarget;
   int wheelX, wheelY, dragSourceX, dragSourceXFine, dragSourceY, dragDestinationX, dragDestinationXFine, dragDestinationY, oldBeat, oldBar;
   int curGroove, exitDisabledTimer;
   int curPaletteChoice, curPaletteType;
   float soloTimeout;
-
-  double exportFadeOut;
 
   bool patExtraButtons, patChannelNames, patChannelPairs;
   unsigned char patChannelHints;
@@ -2591,7 +2601,7 @@ class FurnaceGUI {
   ImGuiListClipper csClipper;
 
   // export options
-  int audioExportType;
+  DivAudioExportOptions audioExportOptions;
   int dmfExportVersion;
   FurnaceGUIExportTypes curExportType;
 
