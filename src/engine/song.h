@@ -178,6 +178,11 @@ struct DivSubSong {
   String chanName[DIV_MAX_CHANS];
   String chanShortName[DIV_MAX_CHANS];
 
+  /**
+   * walk through the song and determine loop position.
+   */
+  bool walk(int& loopOrder, int& loopRow, int& loopEnd, int chans, int jumpTreatment, int ignoreJumpAtEnd, int firstPat=0);
+
   void clearData();
   void optimizePatterns();
   void rearrangePatterns();
@@ -352,6 +357,11 @@ struct DivSong {
   DivInstrument nullIns, nullInsOPLL, nullInsOPL, nullInsOPLDrums, nullInsQSound, nullInsESFM;
   DivWavetable nullWave;
   DivSample nullSample;
+
+  /**
+   * find data past 0Bxx effects and place that into new sub-songs.
+   */
+  void findSubSongs(int chans);
 
   /**
    * clear orders and patterns.
