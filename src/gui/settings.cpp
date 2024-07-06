@@ -1403,38 +1403,36 @@ void FurnaceGUI::drawSettings() {
           ImGui::EndTable();
         }
 
-        if (settings.showPool) {
-          bool renderPoolThreadsB=(settings.renderPoolThreads>0);
-          if (ImGui::Checkbox(_("Multi-threaded (EXPERIMENTAL)"),&renderPoolThreadsB)) {
-            if (renderPoolThreadsB) {
-              settings.renderPoolThreads=2;
-            } else {
-              settings.renderPoolThreads=0;
-            }
+        bool renderPoolThreadsB=(settings.renderPoolThreads>0);
+        if (ImGui::Checkbox(_("Multi-threaded (EXPERIMENTAL)"),&renderPoolThreadsB)) {
+          if (renderPoolThreadsB) {
+            settings.renderPoolThreads=2;
+          } else {
+            settings.renderPoolThreads=0;
+          }
+          settingsChanged=true;
+        }
+        if (ImGui::IsItemHovered()) {
+          ImGui::SetTooltip(_("runs chip emulation on separate threads.\nmay increase performance when using heavy emulation cores.\n\nwarnings:\n- experimental!\n- only useful on multi-chip songs."));
+        }
+
+        if (renderPoolThreadsB) {
+          pushWarningColor(settings.renderPoolThreads>cpuCores,settings.renderPoolThreads>cpuCores);
+          if (ImGui::InputInt(_("Number of threads"),&settings.renderPoolThreads)) {
+            if (settings.renderPoolThreads<2) settings.renderPoolThreads=2;
+            if (settings.renderPoolThreads>32) settings.renderPoolThreads=32;
             settingsChanged=true;
           }
-          if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip(_("runs chip emulation on separate threads.\nmay increase performance when using heavy emulation cores.\n\nwarnings:\n- experimental!\n- only useful on multi-chip songs."));
-          }
-
-          if (renderPoolThreadsB) {
-            pushWarningColor(settings.renderPoolThreads>cpuCores,settings.renderPoolThreads>cpuCores);
-            if (ImGui::InputInt(_("Number of threads"),&settings.renderPoolThreads)) {
-              if (settings.renderPoolThreads<2) settings.renderPoolThreads=2;
-              if (settings.renderPoolThreads>32) settings.renderPoolThreads=32;
-              settingsChanged=true;
+          if (settings.renderPoolThreads>=DIV_MAX_CHIPS) {
+            if (ImGui::IsItemHovered()) {
+              ImGui::SetTooltip(_("that's the limit!"));
             }
-            if (settings.renderPoolThreads>=DIV_MAX_CHIPS) {
-              if (ImGui::IsItemHovered()) {
-                ImGui::SetTooltip(_("that's the limit!"));
-              }
-            } else if (settings.renderPoolThreads>cpuCores) {
-              if (ImGui::IsItemHovered()) {
-                ImGui::SetTooltip(_("it is a VERY bad idea to set this number higher than your CPU core count (%d)!"),cpuCores);
-              }
+          } else if (settings.renderPoolThreads>cpuCores) {
+            if (ImGui::IsItemHovered()) {
+              ImGui::SetTooltip(_("it is a VERY bad idea to set this number higher than your CPU core count (%d)!"),cpuCores);
             }
-            popWarningColor();
           }
+          popWarningColor();
         }
 
         bool lowLatencyB=settings.lowLatency;
@@ -4021,7 +4019,12 @@ void FurnaceGUI::drawSettings() {
           UI_COLOR_CONFIG(GUI_COLOR_MACRO_VOLUME,_("Volume"));
           UI_COLOR_CONFIG(GUI_COLOR_MACRO_PITCH,_("Pitch"));
           UI_COLOR_CONFIG(GUI_COLOR_MACRO_WAVE,_("Wave"));
+          UI_COLOR_CONFIG(GUI_COLOR_MACRO_NOISE,_("Noise"));
+          UI_COLOR_CONFIG(GUI_COLOR_MACRO_FILTER,_("Filter"));
+          UI_COLOR_CONFIG(GUI_COLOR_MACRO_ENVELOPE,_("Envelope"));
+          UI_COLOR_CONFIG(GUI_COLOR_MACRO_GLOBAL,_("Global Parameter"));
           UI_COLOR_CONFIG(GUI_COLOR_MACRO_OTHER,_("Other"));
+          UI_COLOR_CONFIG(GUI_COLOR_MACRO_HIGHLIGHT,_("Step Highlight"));
           ImGui::TreePop();
         }
         if (ImGui::TreeNode(_("Instrument Types"))) {
@@ -4565,10 +4568,6 @@ void FurnaceGUI::drawSettings() {
               mmlString[30]=_("OK, if I bring your Partial pitch linearity will you stop bothering me?");
               settings.displayPartial=1;
             }
-            if (checker==0x8537719f && checker1==0x17a1f34) {
-              mmlString[30]=_("unlocked audio multi-threading options!");
-              settings.showPool=1;
-            }
             if (checker==0x94222d83 && checker1==0x6600) {
               mmlString[30]=_("enabled \"comfortable\" mode");
               ImGuiStyle& sty=ImGui::GetStyle();
@@ -4689,7 +4688,6 @@ void FurnaceGUI::readConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
     settings.chanOscThreads=conf.getInt("chanOscThreads",0);
     settings.renderPoolThreads=conf.getInt("renderPoolThreads",0);
     settings.shaderOsc=conf.getInt("shaderOsc",0);
-    settings.showPool=conf.getInt("showPool",0);
     settings.writeInsNames=conf.getInt("writeInsNames",0);
     settings.readInsNames=conf.getInt("readInsNames",1);
     settings.defaultAuthorName=conf.getString("defaultAuthorName","");
@@ -5203,7 +5201,6 @@ void FurnaceGUI::readConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
   clampSetting(settings.wasapiEx,0,1);
   clampSetting(settings.chanOscThreads,0,256);
   clampSetting(settings.renderPoolThreads,0,DIV_MAX_CHIPS);
-  clampSetting(settings.showPool,0,1);
   clampSetting(settings.writeInsNames,0,1);
   clampSetting(settings.readInsNames,0,1);
   clampSetting(settings.fontBackend,0,1);
@@ -5273,7 +5270,6 @@ void FurnaceGUI::writeConfig(DivConfig& conf, FurnaceGUISettingGroups groups) {
     conf.set("chanOscThreads",settings.chanOscThreads);
     conf.set("renderPoolThreads",settings.renderPoolThreads);
     conf.set("shaderOsc",settings.shaderOsc);
-    conf.set("showPool",settings.showPool);
     conf.set("writeInsNames",settings.writeInsNames);
     conf.set("readInsNames",settings.readInsNames);
     conf.set("defaultAuthorName",settings.defaultAuthorName);
@@ -5683,7 +5679,12 @@ void FurnaceGUI::commitSettings() {
 
   applyUISettings();
 
-  if (rend) rend->destroyFontsTexture();
+  if (rend) {
+    rend->destroyFontsTexture();
+    if (rend->areTexturesSquare()) {
+      ImGui::GetIO().Fonts->Flags|=ImFontAtlasFlags_Square;
+    }
+  }
   if (!ImGui::GetIO().Fonts->Build()) {
     logE("error while building font atlas!");
     showError(_("error while loading fonts! please check your settings."));
@@ -5692,7 +5693,12 @@ void FurnaceGUI::commitSettings() {
     patFont=mainFont;
     bigFont=mainFont;
     headFont=mainFont;
-    if (rend) rend->destroyFontsTexture();
+    if (rend) {
+      rend->destroyFontsTexture();
+      if (rend->areTexturesSquare()) {
+        ImGui::GetIO().Fonts->Flags|=ImFontAtlasFlags_Square;
+      }
+    }
     if (!ImGui::GetIO().Fonts->Build()) {
       logE("error again while building font atlas!");
     } else {
@@ -6657,6 +6663,7 @@ void FurnaceGUI::applyUISettings(bool updateFonts) {
       0xd569, 0xd569,
       0xd574, 0xd574,
       0xd604, 0xd604,
+      0
     };
     ImFontGlyphRangesBuilder range;
     ImVector<ImWchar> outRange;
