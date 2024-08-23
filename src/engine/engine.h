@@ -580,7 +580,9 @@ class DivEngine {
   void processRow(int i, bool afterDelay);
   void nextOrder();
   void nextRow();
-  void performVGMWrite(SafeWriter* w, DivSystem sys, DivRegWrite& write, int streamOff, double* loopTimer, double* loopFreq, int* loopSample, bool* sampleDir, bool isSecond, int* pendingFreq, int* playingSample, int* setPos, unsigned int* sampleOff8, unsigned int* sampleLen8, size_t bankOffset, bool directStream);
+  void performVGMWrite(SafeWriter* w, DivSystem sys, DivRegWrite& write, int streamOff, double* loopTimer, double* loopFreq, int* loopSample, bool* sampleDir, bool isSecond, int* pendingFreq, int* playingSample, int* setPos, unsigned int* sampleOff8, unsigned int* sampleLen8, size_t bankOffset, bool directStream, bool* sampleStoppable);
+  // returns true if end of song.
+  bool nextTick(bool noAccum=false, bool inhibitLowLat=false);
   bool perSystemEffect(int ch, unsigned char effect, unsigned char effectVal);
   bool perSystemPostEffect(int ch, unsigned char effect, unsigned char effectVal);
   bool perSystemPreEffect(int ch, unsigned char effect, unsigned char effectVal);
@@ -667,13 +669,10 @@ class DivEngine {
   // add every export method here
   friend class DivROMExport;
   friend class DivExportAmigaValidation;
-<<<<<<< HEAD
   friend class DivExportAtari2600;
   friend class DivExportAtariLynx;
-=======
   friend class DivExportTiuna;
   friend class DivExportZSM;
->>>>>>> origin/master
 
   public:
     DivSong song;
