@@ -21,8 +21,10 @@
 
 #include "export/amigaValidation.h"
 #include "export/atari2600Export.h"
+#include "export/tiuna.h"
+#include "export/zsm.h"
 
-std::vector<DivROMExportOutput> DivEngine::buildROM(DivROMExportOptions sys) {
+DivROMExport* DivEngine::buildROM(DivROMExportOptions sys) {
   DivROMExport* exporter=NULL;
   switch (sys) {
     case DIV_ROM_AMIGA_VALIDATION:
@@ -31,11 +33,15 @@ std::vector<DivROMExportOutput> DivEngine::buildROM(DivROMExportOptions sys) {
     case DIV_ROM_ATARI_2600:
       exporter=new DivExportAtari2600;
       break;
+    case DIV_ROM_TIUNA:
+      exporter=new DivExportTiuna;
+      break;
+    case DIV_ROM_ZSM:
+      exporter=new DivExportZSM;
+      break;
     default:
       exporter=new DivROMExport;
       break;
   }
-  std::vector<DivROMExportOutput> ret=exporter->go(this);
-  delete exporter;
-  return ret;
+  return exporter;
 }

@@ -54,8 +54,8 @@ class DivWorkPool;
 
 #define DIV_UNSTABLE
 
-#define DIV_VERSION "Import Test"
-#define DIV_ENGINE_VERSION 216
+#define DIV_VERSION "dev217"
+#define DIV_ENGINE_VERSION 217
 // for imports
 #define DIV_VERSION_MOD 0xff01
 #define DIV_VERSION_FC 0xff02
@@ -465,6 +465,7 @@ class DivEngine {
   bool midiIsDirectProgram;
   bool lowLatency;
   bool systemsRegistered;
+  bool romExportsRegistered;
   bool hasLoadedSomething;
   bool midiOutClock;
   bool midiOutTime;
@@ -473,7 +474,7 @@ class DivEngine {
   int midiOutTimeRate;
   float midiVolExp;
   int softLockCount;
-  int subticks, ticks, curRow, curOrder, prevRow, prevOrder, remainingLoops, totalLoops, lastLoopPos, exportLoopCount, nextSpeed, elapsedBars, elapsedBeats, curSpeed;
+  int subticks, ticks, curRow, curOrder, prevRow, prevOrder, remainingLoops, totalLoops, lastLoopPos, exportLoopCount, curExportChan /*for per-channel export progress*/, nextSpeed, elapsedBars, elapsedBeats, curSpeed;
   size_t curSubSongIndex;
   size_t bufferPos;
   double divider;
@@ -497,6 +498,7 @@ class DivEngine {
   DivAudioExportModes exportMode;
   DivAudioExportFormats exportFormat;
   double exportFadeOut;
+  bool isFadingOut;
   int exportOutputs;
   bool exportChannelMask[DIV_MAX_CHANS];
   DivConfig conf;
@@ -518,6 +520,7 @@ class DivEngine {
   static DivSysDef* sysDefs[DIV_MAX_CHIP_DEFS];
   static DivSystem sysFileMapFur[DIV_MAX_CHIP_DEFS];
   static DivSystem sysFileMapDMF[DIV_MAX_CHIP_DEFS];
+  static DivROMExportDef* romExportDefs[DIV_ROM_MAX];
 
   DivCSPlayer* cmdStreamInt;
 
@@ -615,6 +618,17 @@ class DivEngine {
   void loadFF(SafeReader& reader, std::vector<DivInstrument*>& ret, String& stripPath);
   void loadWOPL(SafeReader& reader, std::vector<DivInstrument*>& ret, String& stripPath);
   void loadWOPN(SafeReader& reader, std::vector<DivInstrument*>& ret, String& stripPath);
+ 
+ //sample banks
+  void loadP(SafeReader& reader, std::vector<DivSample*>& ret, String& stripPath);
+  void loadPPC(SafeReader& reader, std::vector<DivSample*>& ret, String& stripPath);
+  void loadPPS(SafeReader& reader, std::vector<DivSample*>& ret, String& stripPath);
+  void loadPVI(SafeReader& reader, std::vector<DivSample*>& ret, String& stripPath);
+  void loadPDX(SafeReader& reader, std::vector<DivSample*>& ret, String& stripPath);
+  void loadPZI(SafeReader& reader, std::vector<DivSample*>& ret, String& stripPath);
+  void loadP86(SafeReader& reader, std::vector<DivSample*>& ret, String& stripPath);
+
+
 
   int loadSampleROM(String path, ssize_t expectedSize, unsigned char*& ret);
 
@@ -622,6 +636,7 @@ class DivEngine {
   bool deinitAudioBackend(bool dueToSwitchMaster=false);
 
   void registerSystems();
+  void registerROMExports();
   void initSongWithDesc(const char* description, bool inBase64=true, bool oldVol=false);
 
   void exchangeIns(int one, int two);
@@ -652,8 +667,13 @@ class DivEngine {
   // add every export method here
   friend class DivROMExport;
   friend class DivExportAmigaValidation;
+<<<<<<< HEAD
   friend class DivExportAtari2600;
   friend class DivExportAtariLynx;
+=======
+  friend class DivExportTiuna;
+  friend class DivExportZSM;
+>>>>>>> origin/master
 
   public:
     DivSong song;
@@ -697,9 +717,8 @@ class DivEngine {
     // save as .fur.
     // if notPrimary is true then the song will not be altered
     SafeWriter* saveFur(bool notPrimary=false, bool newPatternFormat=true);
-    // build a ROM file (TODO).
-    // specify system to build ROM for.
-    std::vector<DivROMExportOutput> buildROM(DivROMExportOptions sys);
+    // return a ROM exporter.
+    DivROMExport* buildROM(DivROMExportOptions sys);
     // dump to VGM.
     // set trailingTicks to:
     // - 0 to add one tick of trailing
@@ -707,8 +726,6 @@ class DivEngine {
     // - -1 to auto-determine trailing
     // - -2 to add a whole loop of trailing
     SafeWriter* saveVGM(bool* sysToExport=NULL, bool loop=true, int version=0x171, bool patternHints=false, bool directStream=false, int trailingTicks=-1);
-    // dump to ZSM.
-    SafeWriter* saveZSM(unsigned int zsmrate=60, bool loop=true, bool optimize=true);
     // dump to TIunA.
     SafeWriter* saveTiuna(const bool* sysToExport, const char* baseLabel, int firstBankSize, int otherBankSize);
     // dump command stream.
@@ -803,6 +820,9 @@ class DivEngine {
     // find song loop position
     void walkSong(int& loopOrder, int& loopRow, int& loopEnd);
 
+    // find song length in rows (up to specified loop point), and find length of every order
+    void findSongLength(int loopOrder, int loopRow, double fadeoutLen, int& rowsForFadeout, bool& hasFFxx, std::vector<int>& orders, int& length);
+
     // play (returns whether successful)
     bool play();
 
@@ -887,6 +907,9 @@ class DivEngine {
 
     // get sys definition
     const DivSysDef* getSystemDef(DivSystem sys);
+
+    // get ROM export definition
+    const DivROMExportDef* getROMExportDef(DivROMExportOptions opt);
 
     // convert sample rate format
     int fileToDivRate(int frate);
@@ -994,6 +1017,24 @@ class DivEngine {
     // is exporting
     bool isExporting();
 
+    // get how many loops is left
+    void getLoopsLeft(int& loops);
+
+    //get how many loops in total export needs to do
+    void getTotalLoops(int& loops);
+
+    // get current position in song
+    void getCurSongPos(int& row, int& order);
+
+    //get how many files export needs to create
+    void getTotalAudioFiles(int& files);
+
+    //get which file is processed right now (progress for e.g. per-channel export)
+    void getCurFileIndex(int& file);
+
+    //get fadeout state
+    bool getIsFadingOut();
+
     // add instrument
     int addInstrument(int refChan=0, DivInstrumentType fallbackType=DIV_INS_STD);
 
@@ -1031,7 +1072,8 @@ class DivEngine {
     int addSamplePtr(DivSample* which);
 
     // get sample from file
-    DivSample* sampleFromFile(const char* path);
+    //DivSample* sampleFromFile(const char* path);
+    std::vector<DivSample*> sampleFromFile(const char* path);
 
     // get raw sample
     DivSample* sampleFromFileRaw(const char* path, DivSampleDepth depth, int channels, bool bigEndian, bool unsign, bool swapNibbles, int rate);
@@ -1297,6 +1339,9 @@ class DivEngine {
     // perform secure/sync operation
     void synchronized(const std::function<void()>& what);
 
+    // perform secure/sync operation (soft)
+    void synchronizedSoft(const std::function<void()>& what);
+
     // perform secure/sync song operation
     void lockSave(const std::function<void()>& what);
 
@@ -1364,6 +1409,7 @@ class DivEngine {
       midiIsDirectProgram(false),
       lowLatency(false),
       systemsRegistered(false),
+      romExportsRegistered(false),
       hasLoadedSomething(false),
       midiOutClock(false),
       midiOutTime(false),
@@ -1382,6 +1428,7 @@ class DivEngine {
       totalLoops(0),
       lastLoopPos(0),
       exportLoopCount(0),
+      curExportChan(0),
       nextSpeed(3),
       elapsedBars(0),
       elapsedBeats(0),
@@ -1420,6 +1467,7 @@ class DivEngine {
       exportMode(DIV_EXPORT_MODE_ONE),
       exportFormat(DIV_EXPORT_FORMAT_S16),
       exportFadeOut(0.0),
+      isFadingOut(false),
       exportOutputs(2),
       cmdStreamInt(NULL),
       midiBaseChan(0),
@@ -1470,6 +1518,7 @@ class DivEngine {
       memset(pitchTable,0,4096*sizeof(int));
       memset(effectSlotMap,-1,4096*sizeof(short));
       memset(sysDefs,0,DIV_MAX_CHIP_DEFS*sizeof(void*));
+      memset(romExportDefs,0,DIV_ROM_MAX*sizeof(void*));
       memset(walked,0,8192);
       memset(oscBuf,0,DIV_MAX_OUTPUTS*(sizeof(float*)));
       memset(exportChannelMask,1,DIV_MAX_CHANS*sizeof(bool));

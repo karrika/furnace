@@ -199,6 +199,14 @@ void DivEngine::walkSong(int& loopOrder, int& loopRow, int& loopEnd) {
   }
 }
 
+void DivEngine::findSongLength(int loopOrder, int loopRow, double fadeoutLen, int& rowsForFadeout, bool& hasFFxx, std::vector<int>& orders, int& length)
+{
+  if (curSubSong!=NULL) 
+  {
+    curSubSong->findLength(loopOrder, loopRow, fadeoutLen, rowsForFadeout, hasFFxx, orders, song.grooves, length, chans, song.jumpTreatment, song.ignoreJumpAtEnd);
+  }
+}
+
 #define EXPORT_BUFSIZE 2048
 
 double DivEngine::benchmarkPlayback() {
@@ -3589,6 +3597,12 @@ void DivEngine::synchronized(const std::function<void()>& what) {
   BUSY_END;
 }
 
+void DivEngine::synchronizedSoft(const std::function<void()>& what) {
+  BUSY_BEGIN_SOFT;
+  what();
+  BUSY_END;
+}
+
 void DivEngine::lockSave(const std::function<void()>& what) {
   saveLock.lock();
   what();
@@ -3915,6 +3929,9 @@ bool DivEngine::preInit(bool noSafeMode) {
 
   // register systems
   if (!systemsRegistered) registerSystems();
+
+  // register ROM exports
+  if (!romExportsRegistered) registerROMExports();
 
   // TODO: re-enable with a better approach
   // see issue #1581

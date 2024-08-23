@@ -112,6 +112,8 @@ bool safeModeWithAudio=false;
 
 bool infoMode=false;
 
+bool noReportError=false;
+
 std::vector<TAParam> params;
 
 #ifdef HAVE_LOCALE
@@ -199,6 +201,11 @@ TAParamResult pView(String val) {
 
 TAParamResult pConsole(String val) {
   consoleMode=true;
+  return TA_PARAM_SUCCESS;
+}
+
+TAParamResult pQuiet(String val) {
+  noReportError=true;
   return TA_PARAM_SUCCESS;
 }
 
@@ -437,12 +444,6 @@ TAParamResult pVGMOut(String val) {
   return TA_PARAM_SUCCESS;
 }
 
-TAParamResult pZSMOut(String val) {
-  zsmOutName=val;
-  e.setAudio(DIV_AUDIO_DUMMY);
-  return TA_PARAM_SUCCESS;
-}
-
 TAParamResult pCmdOut(String val) {
   cmdOutName=val;
   e.setAudio(DIV_AUDIO_DUMMY);
@@ -465,7 +466,6 @@ void initParams() {
   params.push_back(TAParam("o","output",true,pOutput,"<filename>","output audio to file"));
   params.push_back(TAParam("O","vgmout",true,pVGMOut,"<filename>","output .vgm data"));
   params.push_back(TAParam("D","direct",false,pDirect,"","set VGM export direct stream mode"));
-  params.push_back(TAParam("Z","zsmout",true,pZSMOut,"<filename>","output .zsm data for Commander X16 Zsound"));
   params.push_back(TAParam("C","cmdout",true,pCmdOut,"<filename>","output command stream"));
   params.push_back(TAParam("r","romout",true,pROMOut,"<filename>","output rom"));
   params.push_back(TAParam("b","binary",false,pBinary,"","set command stream output format to binary"));
@@ -473,6 +473,7 @@ void initParams() {
   params.push_back(TAParam("v","view",true,pView,"pattern|commands|nothing","set visualization (nothing by default)"));
   params.push_back(TAParam("i","info",false,pInfo,"","get info about a song"));
   params.push_back(TAParam("c","console",false,pConsole,"","enable console mode"));
+  params.push_back(TAParam("q","noreport",false,pQuiet,"","do not display message box on error"));
   params.push_back(TAParam("n","nostatus",false,pNoStatus,"","disable playback status in console mode"));
   params.push_back(TAParam("N","nocontrols",false,pNoControls,"","disable standard input controls in console mode"));
 
@@ -491,18 +492,25 @@ void initParams() {
 #ifdef _WIN32
 void reportError(String what) {
   logE("%s",what);
-  MessageBox(NULL,what.c_str(),"Furnace",MB_OK|MB_ICONERROR);
+  if (!noReportError) {
+    MessageBox(NULL,what.c_str(),"Furnace",MB_OK|MB_ICONERROR);
+  }
 }
 #elif defined(ANDROID) || defined(__APPLE__)
 void reportError(String what) {
   logE("%s",what);
 #ifdef HAVE_SDL2
-  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,"Error",what.c_str(),NULL);
+  if (!noReportError) {
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,"Error",what.c_str(),NULL);
+  }
 #endif
 }
 #else
 void reportError(String what) {
   logE("%s",what);
+  if (!noReportError) {
+    // dummy
+  }
 }
 #endif
 
